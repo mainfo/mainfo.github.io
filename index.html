@@ -50,18 +50,25 @@ $.getJSON("http://raw.githubusercontent.com/mainfo/data/master/data.json", funct
         //console.log("yeah");
       }
     });
+    var OpenStreetMap_HOT = L.tileLayer('http://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png', {
+        maxZoom: 19,
+        attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>, Tiles courtesy of <a href="http://hot.openstreetmap.org/" target="_blank">Humanitarian OpenStreetMap Team</a>'
+    });
+
     var labels = L.tileLayer('http://54.77.175.142:8000/TonerVietnam/{z}/{x}/{y}.png');
     var tiles = L.tileLayer('http://{s}.tiles.mapbox.com/v3/{id}/{z}/{x}/{y}.png', {
         attribution: '<a href="https://www.mapbox.com/about/maps/">Terms and Feedback</a>',
         id: 'bobbysud.79c006a5'
     });
     var heatLayer = L.heatLayer(heat,{radius: 20,blur: 30, maxZoom: 10});
+    
     var baseMaps = {
         "Satellite": tiles,
+        "OSM":OpenStreetMap_HOT
     };
 
     var overlayMaps = {
-        "Labels": labels,
+        "More Labels": labels,
         "Heatmap": heatLayer
     };
 
