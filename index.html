@@ -93,7 +93,9 @@ $.getJSON("http://raw.githubusercontent.com/mainfo/data/master/data.json", funct
         attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>, Tiles courtesy of <a href="http://hot.openstreetmap.org/" target="_blank">Humanitarian OpenStreetMap Team</a>'
     });
 
-    var labels = L.tileLayer('http://54.77.175.142:8000/TonerVietnam/{z}/{x}/{y}.png');
+    //From Mapbox
+    var labels = L.tileLayer('http://{s}.tiles.mapbox.com/v4/mainfo.f3xwp14i/{z}/{x}/{y}.png?access_token=pk.eyJ1IjoibWFpbmZvIiwiYSI6ImRjMGNmMGE5ZjczYzc2NDU0MmFlNWQ3NThiYzRkYmRhIn0.Z9ZkL0wyzGyOyGMkcyFU1w');
+
     var tiles = L.tileLayer('http://{s}.tiles.mapbox.com/v3/{id}/{z}/{x}/{y}.png', {
         attribution: '<a href="https://www.mapbox.com/about/maps/">Terms and Feedback</a>',
         id: 'bobbysud.79c006a5'
