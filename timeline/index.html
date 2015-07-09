@@ -55,7 +55,7 @@ $.getJSON("http://raw.githubusercontent.com/mainfo/data/master/data.json", funct
     //console.log(lsp);
     var gpby = _.groupBy(lsp,'name');
     
-    var xs = ['Number of updates per day'];
+    var xs = ['Updates'];
     var timeset =['x'];
 
     $.each(gpby, function( index, value ) {
