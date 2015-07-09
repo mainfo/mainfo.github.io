@@ -15,14 +15,9 @@
 <div id="chart"></div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.5/d3.min.js" charset="utf-8"></script>
-<!-- <script src="../node_modules/simpleheat/simpleheat.js"></script>
-<script src="../src/HeatLayer.js"></script> -->
-
-<!--<script src="src/HeatLayer.js"></script>-->
 <script src="c3.js"></script>
 <script src="src/simpleheat.js"></script>
 
-<!--<script src="http://leaflet.github.io/Leaflet.markercluster/example/realworld.10000.js"></script>-->
 
 <script>
 
@@ -52,37 +47,26 @@ $.getJSON("http://raw.githubusercontent.com/mainfo/data/master/data.json", funct
       
     });
 
-    //console.log(lsp);
+    //Group By Update date;
     var gpby = _.groupBy(lsp,'name');
     
     var xs = ['Updates'];
     var timeset =['x'];
 
+    //Reduce and count values 
     $.each(gpby, function( index, value ) {
       ind = index;
-      //obj2 = {
-            //lng : ind[0],
-            //lat: ind[1],
-            //count:value.length
-      //};
       var time = ind;
       var x = value.length
-      console.log(time);
       timeset.push(time);
       xs.push(x);
-      
     });
-
-    console.log(xs);
-    console.log(timeset);
 
     var chart = c3.generate({
 	    data: {
 	        x: 'x',
-	//        xFormat: '%Y%m%d', // 'xFormat' can be used as custom format of 'x'
 	        columns: [
 	            timeset,
-	//            ['x', '20130101', '20130102', '20130103', '20130104', '20130105', '20130106'],
 	            xs
 	        ]
 	    },
@@ -96,8 +80,6 @@ $.getJSON("http://raw.githubusercontent.com/mainfo/data/master/data.json", funct
 	        }
 	    }
 	});
-   
-    //console.log(reduce);
     
 });
 
