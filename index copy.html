@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Mainfo</title>
+    <link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.css" />
+    <script src="http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.js"></script>
+    <script src="http://code.jquery.com/jquery-2.1.0.min.js"></script>
+    <script src="http://underscorejs.org/underscore.js"></script>
+    <style>
+
+        body {
+            padding: 0;
+            margin: 0;
+        }
+        html, body, #map {
+            height: 100%;
+            width: 100%;
+        }
+        .update {
+          position: absolute;
+          padding: 6px 8px;
+          font: 14px/16px Arial, Helvetica, sans-serif;
+          color: #223;
+          background-color: rgba(255, 255, 255, 0.8);
+          box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+          z-index:2000;
+          left: 10px;
+          bottom: 10px;
+        }
+
+    </style>
+</head>
+<body>
+
+<div class="update"></div>
+<div id="map"></div>
+
+<!-- <script src="../node_modules/simpleheat/simpleheat.js"></script>
+<script src="../src/HeatLayer.js"></script> -->
+
+<!--<script src="src/HeatLayer.js"></script>-->
+<script src="src/heatmap.js"></script>
+<script src="src/simpleheat.js"></script>
+
+<!--<script src="http://leaflet.github.io/Leaflet.markercluster/example/realworld.10000.js"></script>-->
+
+<script>
+
+
+var groups = {};
+
+$.getJSON("http://raw.githubusercontent.com/mainfo/data/master/data.json", function(data) {
+    var heat = [];
+    var last_update = data.last_update;
+    $(".update").html("Last update: " + last_update);
+    
+    var lsp = [];
+    var geojsonheat = L.geoJson(data, {
+      onEachFeature: function (feature, layer) {
+
+        var lng = feature.geometry.coordinates[0];
+        var lat = feature.geometry.coordinates[1];
+        var date_add = feature.properties.date_add;
+        
+        obj = {
+            name: lng+"_"+lat,
+            lat: lat,
+            lng:lng
+        };
+
+        lsp.push(obj);
+      }
+    });
+
+    console.log(lsp);
+    var gpby = _.groupBy(lsp,'name');
+    
+    var reduce =[];
+    $.each(gpby, function( index, value ) {
+      ind = index.split("_");
+      //obj2 = {
+            //lng : ind[0],
+            //lat: ind[1],
+            //count:value.length
+      //};
+      var result = [+ind[1],+ind[0],String(value.length)];
+      reduce.push(result);
+      
+    });
+    
+    var OpenStreetMap_HOT = L.tileLayer('http://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png', {
+        maxZoom: 19,
+        attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>, Tiles courtesy of <a href="http://hot.openstreetmap.org/" target="_blank">Humanitarian OpenStreetMap Team</a>'
+    });
+
+    //From Mapbox
+    var labels = L.tileLayer('http://{s}.tiles.mapbox.com/v4/mainfo.f3xwp14i/{z}/{x}/{y}.png?access_token=pk.eyJ1IjoibWFpbmZvIiwiYSI6ImRjMGNmMGE5ZjczYzc2NDU0MmFlNWQ3NThiYzRkYmRhIn0.Z9ZkL0wyzGyOyGMkcyFU1w');
+
+    var tiles = L.tileLayer('http://{s}.tiles.mapbox.com/v3/{id}/{z}/{x}/{y}.png', {
+        attribution: '<a href="https://www.mapbox.com/about/maps/">Terms and Feedback</a>',
+        id: 'bobbysud.79c006a5'
+    })
+    //var heatLayer = L.heatLayer(reduce,{radius: 20,blur: 30, maxZoom: 12});
+    
+    var heatmapLayer = L.heatLayer(reduce,{radius: 20,blur: 40, maxZoom: 10});
+    //var heatmapLayer = new HeatmapOverlay(cfg);
+
+    var baseMaps = {
+        "Satellite": tiles,
+        "OSM":OpenStreetMap_HOT
+    };
+
+    var overlayMaps = {
+        "More Labels": labels,
+        "Heatmap": heatmapLayer
+    };
+
+    var map = L.map('map',{maxZoom: 12,layers: [tiles, heatmapLayer,labels]}).setView([16.68, 107.23], 10);
+
+    //heatmapLayer.setData(testData);
+
+    L.control.layers(baseMaps, overlayMaps).addTo(map);
+
+    console.log(reduce);
+    
+});
+
+
+
+</script>
+</body>
+</html>
