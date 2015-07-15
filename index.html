@@ -3,7 +3,8 @@
 <head>
     <title>Mainfo</title>
     <link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.css" />
-    <link rel="stylesheet" href="dist/leaflet.label.css" />
+    <link rel="stylesheet" href="dist/leaflet.label.css"/>
+    <link rel="stylesheet" href="dist/panel.css"/>
     <script src="http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.js"></script>
     <script src="http://code.jquery.com/jquery-2.1.0.min.js"></script>
     <script src="http://underscorejs.org/underscore.js"></script>
@@ -56,6 +57,8 @@
 <script src="src/Path.Label.js"></script>
 <script src="src/Map.Label.js"></script>
 <script src="src/FeatureGroup.Label.js"></script>
+<script src="src/panel.js"></script>
+
 
 <!--<script src="http://leaflet.github.io/Leaflet.markercluster/example/realworld.10000.js"></script>-->
 
@@ -139,49 +142,112 @@ $.getJSON("http://raw.githubusercontent.com/mainfo/data/master/data.json", funct
           })
           //var heatLayer = L.heatLayer(reduce,{radius: 20,blur: 30, maxZoom: 12});
 
-          var heatmapLayer = L.heatLayer(reduce,{radius: 20,blur: 40, maxZoom: 10});
+          var heatmapLayer = L.heatLayer(reduce,{radius: 30,blur: 50, maxZoom: 13});
           //var heatmapLayer = new HeatmapOverlay(cfg);
 
-          var baseMaps = {
-              "Satellite": tiles,
-              "OSM":OpenStreetMap_HOT
-          };
-
-          var overlayMaps = {
-              "Heatmap": heatmapLayer,
-              "Cities and Towns": features_cities_and_towns,
-              "Villages":features_villages
-
-          };
+          var baseLayers = [
+          	{
+          		group: "Background Maps",
+          		layers: [
+                {
+                  name: "Humanitarian Open Street Map",
+                  layer: OpenStreetMap_HOT
+                },
+                {
+                  name: "ESRI Satellite",
+                  layer: tiles
+                }
+                // ,
+                // {
+                //   name: "Open Cycle Map",
+                //   layer: L.tileLayer('http://{s}.tile.opencyclemap.org/cycle/{z}/{x}/{y}.png')
+                // },
+                // {
+                //   name: "Transports",
+                //   layer: L.tileLayer('http://{s}.tile2.opencyclemap.org/transport/{z}/{x}/{y}.png')
+                // }
+          		]
+          	}
+          ];
+          var overLayers = [
+          	{
+          		group: "Reports collected",
+          		layers: [
+          			{
+          				name: "HeatMap",
+          				layer: heatmapLayer
+          			}
+          		]
+          	},
+          	{
+          		group: "Labels (Open Street Map)",
+          		layers: [
+          			{
+          				active: true,
+          				name: "Cities",
+          				//icon: '<i class="icon icon-bar"></i>',
+          				layer: features_cities_and_towns
+          			},
+          			{
+          				name: "Villages",
+          				//icon: '<i class="icon icon-drinking_water"></i>',
+          				layer: features_villages
+          			}
+          		]
+          	}
+          ];
+          // var baseMaps = {
+          //     "Satellite": tiles,
+          //     "OSM":OpenStreetMap_HOT
+          // };
+          //
+          // var overlayMaps = {
+          //     "Heatmap": heatmapLayer,
+          //     "Cities and Towns": features_cities_and_towns,
+          //     "Villages":features_villages
+          //
+          // };
 
           var map = L.map('map',{maxZoom: 13,minZoom:10,layers: [tiles,features_cities_and_towns,heatmapLayer]}).setView([16.68, 107.23], 10);
 
           //heatmapLayer.setData(testData);
 
-          L.control.layers(baseMaps, overlayMaps).addTo(map);
+          //L.control.layers(baseMaps, overlayMaps).addTo(map);
+          var panelLayers = new L.Control.PanelLayers(baseLayers, overLayers);
 
+          map.addControl(panelLayers);
 
           //Supre le overlays machin.. Lorsque kle zoom est à 13 alors on met les villages.. losrqu'on passs à OSM on enleve les etiquette...
+          map.on('zoomend', function (e) {
+              myZoomHandler();
+          });
 
+          function myZoomHandler() {
+            var currentZoom = map.getZoom();
+            switch (currentZoom) {
+                case 10:
+                $( "span:contains('Villages')").siblings().attr('disabled','disabled');
+                $( "span:contains('Villages')").parent().css("background-color","rgba(0, 0, 0, 0.3)");
+                break;
+                case 13:
+                $( "span:contains('Villages')").siblings().removeAttr('disabled');;
+                $( "span:contains('Villages')").parent().css("background-color","rgba(250, 250, 250, 1)");
+                break;
+                default:
+                $( "span:contains('Villages')").siblings().attr('disabled','disabled');
+                $( "span:contains('Villages')").parent().css("background-color","rgba(0, 0, 0, 0.3)");
+                break;
+            }
+        }
+        //On load
+        $( "span:contains('Villages')").siblings().attr('disabled','disabled');
+        $( "span:contains('Villages')").parent().css("background-color","rgba(0, 0, 0, 0.3)");
 
-          // map.on('overlayadd', function(eventLayer) {
-          // //IRL use polymorphism not an ugly case statement.
-          //     switch (eventLayer.name) {
-          //         case "Villages":
-          //         //Uncheck the box
-          //         var span = eventLayer.name;
-          //         console.log(span);
-          //         var radio = span.parentNode.parentNode.getElementsByTagName('radio')[0];
-          //
-          //         var currentZoom = map.getZoom();
-          //          if(currentZoom < 13){
-          //            alert("please zoom to the max")
-          //            map.removeLayer(features_villages);
-          //          }
-          //
-          //         break;
-          //     }
-          // });
+        //Late CSS custom
+        $( "span:contains('Label')").css("font-weight","bold").css("color","#000");
+        $( "span:contains('Reports')").css("font-weight","bold").css("color","#000");
+        $( "span:contains('Background')").css("font-weight","bold").css("color","#000");
+
       });
 
 
