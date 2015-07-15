@@ -164,24 +164,24 @@ $.getJSON("http://raw.githubusercontent.com/mainfo/data/master/data.json", funct
           //Supre le overlays machin.. Lorsque kle zoom est à 13 alors on met les villages.. losrqu'on passs à OSM on enleve les etiquette...
 
 
-          map.on('overlayadd', function(eventLayer) {
-          //IRL use polymorphism not an ugly case statement.
-              switch (eventLayer.name) {
-                  case "Villages":
-                  //Uncheck the box
-                  var span = eventLayer.name;
-                  console.log(span);
-                  var radio = span.parentNode.parentNode.getElementsByTagName('radio')[0];
-
-                  var currentZoom = map.getZoom();
-                   if(currentZoom < 13){
-                     alert("please zoom to the max")
-                     map.removeLayer(features_villages);
-                   }
-
-                  break;
-              }
-          });
+          // map.on('overlayadd', function(eventLayer) {
+          // //IRL use polymorphism not an ugly case statement.
+          //     switch (eventLayer.name) {
+          //         case "Villages":
+          //         //Uncheck the box
+          //         var span = eventLayer.name;
+          //         console.log(span);
+          //         var radio = span.parentNode.parentNode.getElementsByTagName('radio')[0];
+          //
+          //         var currentZoom = map.getZoom();
+          //          if(currentZoom < 13){
+          //            alert("please zoom to the max")
+          //            map.removeLayer(features_villages);
+          //          }
+          //
+          //         break;
+          //     }
+          // });
       });
 
 
