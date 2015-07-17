@@ -149,6 +149,7 @@
         };
 
       });
+
       //features_cities_and_towns.push(features_cities);
       map.removeLayer(features_cities_and_towns);
       features_cities_and_towns = L.featureGroup(features_cities);
@@ -157,26 +158,62 @@
       map.removeLayer(features_villages);
       features_villages = L.featureGroup(features_vill);
 
-      console.log(features_villages);
-      var createLabelIcon = function(labelClass,labelText){
-        return L.divIcon({
-          className: labelClass,
-          html: labelText
-        })
-      };
+      map.on('zoomend', function (e) {
+        myZoomHandler();
+      });
+
+      function myZoomHandler() {
+        var currentZoom = map.getZoom();
+        console.log(currentZoom);
+        switch (currentZoom) {
+          case 12:
+          map.removeLayer(features_villages);
+          features_villages = L.featureGroup(features_vill);
+          console.log(features_villages);
+
+          _.each(features_villages, function(data){
+            _.each(data,function(vil){
+                vil.setStyle({radius :'4'});
+                vil.setStyle({stroke :true});
+                vil.setStyle({labelAnchor :[0,0]});
+                //layer.label._content = "Bla";
+                vil.label.className ="";
+                vil._labelNoHide=false;
+              });
+            });
+          map.addLayer(features_villages);
+          break;
+          case 13:
+          map.removeLayer(features_villages);
+          features_villages = L.featureGroup(features_vill);
+
+          var layerdisab = $( "span:contains('Villages')").siblings().is(':checked');
+
+          console.log(layerdisab);
+
+          _.each(features_villages, function(data){
+            _.each(data,function(vil){
+                vil.setStyle({radius :'0'});
+                vil.setStyle({stroke :false});
+                vil.setStyle({labelAnchor :[0,0]});
+                //layer.label._content = "Bla";
+                vil.label.className ="textLabelclass";
+                vil._labelNoHide=true;
+              });
+            });
+
+            if(layerdisab === true){
+            map.addLayer(features_villages);
+            };
+          //$( "span:contains('Villages')").siblings().removeAttr('disabled');;
+          //$( "span:contains('Villages')").parent().css("background-color","rgba(250, 250, 250, 1)");
+          break;
+
+        }
+      }
 
 
-      _.each(features_villages, function(data){
-        _.each(data,function(layer){
-            layer.setStyle({radius :'0'});
-            layer.setStyle({stroke :false});
-            layer.setStyle({labelAnchor :[0,0]});
-            //layer.label._content = "Bla";
-            layer.label.className ="textLabelclass";
-            layer._labelNoHide=true;
-          });
-        });
-
+        console.log(features_villages);
 
 
 
@@ -273,9 +310,6 @@
 
       L.control.layers(baseMaps, overlayMaps,{collapsed:false}).addTo(map);
       var graphicScale = L.control.graphicScale({fill:'fill'}).addTo(map);
-
-
-
 
 
   });
