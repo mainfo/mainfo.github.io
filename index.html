@@ -142,7 +142,7 @@
         if(value.tags.place == "village"){
           //Create marker for villages
           //var village = L.marker(new L.LatLng(value.lat, value.lon), {icon:createLabelIcon("textLabelclass",value.tags.name)});
-          var village = L.circleMarker([value.lat, value.lon],{ fillColor: "#fff", color:"#000",radius: 4 }).bindLabel(value.tags.name,{className:"textLabelclass",noHide: false ,direction:"auto",offset:[3,-15]});
+          var village = L.circleMarker([value.lat, value.lon],{ fillColor: "#fff", color:"#000",radius: 4 }).bindLabel(value.tags.name,{className:"textLabelclass",noHide: false ,direction:"right",offset:[3,-15]});
           features_vill.push(village);
           //var villages_label_zoom = L.marker(new L.LatLng(value.lat, value.lon), {icon:createLabelIcon("textLabelclass",value.tags.name)});
           //feature_villages_zoomed.push(villages_label_zoom);
@@ -175,10 +175,13 @@
             _.each(data,function(vil){
                 vil.setStyle({radius :'4'});
                 vil.setStyle({stroke :true});
-                vil.setStyle({labelAnchor :[0,0]});
-                //layer.label._content = "Bla";
-                vil.label.className ="";
                 vil._labelNoHide=false;
+                //vil.setStyle({labelAnchor :[0,0]});
+                //vil._leaflet_events.mouseout = [L.BaseMarkerMethods.hideLabel];
+                //layer.label._content = "Bla";
+                //vil.label.className ="";
+                vil._leaflet_events.mouseout[0].action = L.BaseMarkerMethods.hideLabel;
+
               });
             });
           map.addLayer(features_villages);
@@ -193,14 +196,25 @@
 
           _.each(features_villages, function(data){
             _.each(data,function(vil){
-                vil.setStyle({radius :'0'});
-                vil.setStyle({stroke :false});
-                vil.setStyle({labelAnchor :[0,0]});
+                //vil.setStyle({radius :'0'});
+                //vil.setStyle({stroke :false});
+                //vil.setStyle({labelAnchor :[0,0]});
                 //layer.label._content = "Bla";
                 vil.label.className ="textLabelclass";
                 vil._labelNoHide=true;
+                vil._leaflet_events.mouseout[0].action = L.BaseMarkerMethods.showLabel;
+                //vil.options.clickable=false;
+                //vil.on('mouseout', function(evt) {
+                  //evt.target is the marker that is being moused over
+                  //bindPopup() does not need to be called here if it was already called
+                  //somewhere else for this marker.
+                  //evt.target.bindPopup('hi').openPopup();
+                  //L.BaseMarkerMethods.showLabel;
+                //});
+                //vil._hasLabelHandlers=false;
               });
             });
+            //features_cities_and_towns.bringToFront();
 
             if(layerdisab === true){
             map.addLayer(features_villages);
