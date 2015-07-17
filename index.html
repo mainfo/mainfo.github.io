@@ -5,6 +5,7 @@
   <link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.css" />
   <link rel="stylesheet" href="dist/leaflet.label.css"/>
   <link rel="stylesheet" href="dist/panel.css"/>
+  <link rel="stylesheet" href="dist/scale.css"/>
   <script src="http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.js"></script>
   <script src="http://code.jquery.com/jquery-2.1.0.min.js"></script>
   <script src="http://underscorejs.org/underscore.js"></script>
@@ -26,8 +27,8 @@
     background-color: rgba(255, 255, 255, 0.8);
     box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
     z-index:2000;
-    left: 10px;
-    bottom: 10px;
+    right: 0px;
+    bottom: 20px;
   }
   .labelvillages
   {
@@ -36,7 +37,11 @@
     font: 10px/20px "Helvetica Neue", Arial, Helvetica, sans-serif;
     z-index: 6;
   }
-
+  .leaflet-control-layers-expanded {
+    background: rgba(250, 250, 250, 0.7) none repeat scroll 0 0;
+    color: #333;
+    padding: 6px 10px 6px 6px;
+  }
   </style>
 </head>
 <body>
@@ -58,6 +63,7 @@
   <script src="src/Map.Label.js"></script>
   <script src="src/FeatureGroup.Label.js"></script>
   <script src="src/panel.js"></script>
+  <script src="src/scale.js"></script>
 
 
   <!--<script src="http://leaflet.github.io/Leaflet.markercluster/example/realworld.10000.js"></script>-->
@@ -108,20 +114,18 @@
     //CAll to the Overpass API
     $.getJSON("http://overpass-api.de/api/interpreter?data=%5Bout%3Ajson%5D%3B%0A%28%0A%20%20node%5B%22place%22~%22city%7Ctown%7Cvillage%22%5D%2816.18038632955662%2C106.578369140625%2C17.456235599424733%2C107.83355712890625%29%3B%0A%29%3B%0Aout%20body%3B%0A%3E%3B%0Aout%20skel%20qt%3B", function(cities_result) {
       cities_all = cities_result.elements;
-
       features_cities = [];
       features_vill = [];
-
       $.each(cities_all, function( index, value ) {
         //console.log(index, value);
         var place = { id:index,lat:value.lat,lng:value.lon,name:value.tags.name,place:value.tags.place} ;
         if(value.tags.place == "city"||value.tags.place=="town"){
-          //Create marker with theses elements
+          //Create marker for cities and towns
           var circle_city = L.circleMarker([value.lat, value.lon], { fillColor: "#fff", color:"#000",radius: 4 }).bindLabel(value.tags.name, { noHide: true });
           features_cities.push(circle_city);
         }
         if(value.tags.place == "village"){
-          //Create marker with theses elements
+          //Create marker for villages
           var circle_villages = L.circleMarker([value.lat, value.lon],{ fillColor: "#fff", color:"#000",radius: 4 }).bindLabel(value.tags.name,{className:"labelvillages",noHide: true ,direction:"auto"});
           features_vill.push(circle_villages);
         };
@@ -154,7 +158,7 @@
         lngField: 'lng',
         // which field name in your data represents the data value - default "value"
         valueField: 'count',
-        gradient:{0.2:'#01ABE9',0.6:'#C3CED0',0.7: '#F54B1A'}
+        //gradient:{0.2:'#01ABE9',0.6:'#C3CED0',0.7: '#F54B1A'}
         //gradient:{0.1:'#01ABE9',0.5:'#1B346C',0.6:'#F54B1A',0.8: '#01ABE9',1:'#01ABE9'}
       };
 
@@ -172,6 +176,10 @@
       var tiles = L.tileLayer('http://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
         attribution: 'Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community'
       })
+
+
+      var districts = L.tileLayer('http://{s}.tiles.mapbox.com/v4/mainfo.7tz6ko6r/{z}/{x}/{y}.png?access_token=pk.eyJ1IjoibWFpbmZvIiwiYSI6ImRjMGNmMGE5ZjczYzc2NDU0MmFlNWQ3NThiYzRkYmRhIn0.Z9ZkL0wyzGyOyGMkcyFU1w');
+
       //var heatLayer = L.heatLayer(reduce,{radius: 20,blur: 30, maxZoom: 12});
 
       //var heatmapLayer = L.heatLayer(reduce,{radius: 40,blur: 40});//gradient:{0.1:'#edf8fb',0.5:'#b3cde3',0.6:'#8c96c6',0.8: '#88419d'}
@@ -183,16 +191,23 @@
 
       var overlayMaps = {
         "Heat map of the reports collected": heatmapLayer,
+        "Districts boundaries" : districts,
         "Cities from OSM": features_cities_and_towns,
         "Villages from OSM":features_villages
 
       };
 
-      var map = L.map('map',{maxZoom: 13,minZoom:10,layers: [tiles,features_cities_and_towns,heatmapLayer]}).setView([16.68, 107.23], 10);
+      //Restric to bounds
+      var southWest = L.latLng(16.531606,107.0103),
+      northEast = L.latLng(16.801204,108.41921),
+      bounds = L.latLngBounds(southWest, northEast);
+
+      var map = L.map('map',{maxZoom: 13,minZoom:12, maxBounds: bounds,layers: [tiles,features_cities_and_towns,heatmapLayer,districts]}).setView([16.68, 107.3], 12);
 
       heatmapLayer.setData(hotData);
 
-      L.control.layers(baseMaps, overlayMaps).addTo(map);
+      L.control.layers(baseMaps, overlayMaps,{collapsed:false}).addTo(map);
+       var graphicScale = L.control.graphicScale({fill:'fill'}).addTo(map);
       //var panelLayers = new L.Control.PanelLayers(baseLayers, overLayers);
 
       //map.addControl(panelLayers);
