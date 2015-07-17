@@ -52,6 +52,7 @@
     color: white;
     background-color: transparent;
     border-color: transparent;
+    z-index:5;
   }
   </style>
 </head>
@@ -124,8 +125,9 @@
     //Get the layer OSM cities and town
     var features_cities_and_towns = "";
     var features_villages ="";
-    features_cities_and_towns = L.featureGroup(null);
     features_villages = L.featureGroup(null);
+    features_cities_and_towns = L.featureGroup(null);
+
     //CAll to the Overpass API
     $.getJSON("http://overpass-api.de/api/interpreter?data=%5Bout%3Ajson%5D%3B%0A%28%0A%20%20node%5B%22place%22~%22city%7Ctown%7Cvillage%22%5D%2816.18038632955662%2C106.578369140625%2C17.456235599424733%2C107.83355712890625%29%3B%0A%29%3B%0Aout%20body%3B%0A%3E%3B%0Aout%20skel%20qt%3B", function(cities_result) {
       cities_all = cities_result.elements;
