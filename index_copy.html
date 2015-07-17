@@ -42,13 +42,6 @@
     color: #333;
     padding: 6px 10px 6px 6px;
   }
-  .textLabelclass{
-    white-space:nowrap;
-    font-weight: 300;
-    text-shadow: 0 0 0.1em black, 0 0 0.1em black,
-          0 0 0.1em black,0 0 0.1em black,0 0 0.1em;
-    color: white;
-  }
   </style>
 </head>
 <body>
@@ -115,79 +108,35 @@
       reduce.push(obj2);
     });
 
-    var createLabelIcon = function(labelClass,labelText){
-      return L.divIcon({
-        className: labelClass,
-        html: labelText
-      })
-    };
-
     //Get the layer OSM cities and town
     var features_cities_and_towns = "";
     var features_villages ="";
-    features_cities_and_towns = L.featureGroup(null);
-    features_villages = L.featureGroup(null);
     //CAll to the Overpass API
     $.getJSON("http://overpass-api.de/api/interpreter?data=%5Bout%3Ajson%5D%3B%0A%28%0A%20%20node%5B%22place%22~%22city%7Ctown%7Cvillage%22%5D%2816.18038632955662%2C106.578369140625%2C17.456235599424733%2C107.83355712890625%29%3B%0A%29%3B%0Aout%20body%3B%0A%3E%3B%0Aout%20skel%20qt%3B", function(cities_result) {
       cities_all = cities_result.elements;
       features_cities = [];
       features_vill = [];
-
       $.each(cities_all, function( index, value ) {
         //console.log(index, value);
         var place = { id:index,lat:value.lat,lng:value.lon,name:value.tags.name,place:value.tags.place} ;
-
         if(value.tags.place == "city"||value.tags.place=="town"){
           //Create marker for cities and towns
-          var circle_city = L.circleMarker([value.lat, value.lon], { fillColor: "#fff", color:"#000",radius: 7 }).bindLabel(value.tags.name, { noHide: true });
+          var circle_city = L.circleMarker([value.lat, value.lon], { fillColor: "#fff", color:"#000",radius: 4 }).bindLabel(value.tags.name, { noHide: true });
           features_cities.push(circle_city);
         }
         if(value.tags.place == "village"){
           //Create marker for villages
-          var village = L.marker(new L.LatLng(value.lat, value.lon), {icon:createLabelIcon("textLabelclass",value.tags.name)});
-          features_vill.push(village);
-          //var villages_label_zoom = L.marker(new L.LatLng(value.lat, value.lon), {icon:createLabelIcon("textLabelclass",value.tags.name)});
-          //feature_villages_zoomed.push(villages_label_zoom);
+          var circle_villages = L.circleMarker([value.lat, value.lon],{ fillColor: "#fff", color:"#000",radius: 4 }).bindLabel(value.tags.name,{className:"labelvillages",noHide: true ,direction:"auto"});
+          features_vill.push(circle_villages);
         };
-
       });
-      //features_cities_and_towns.push(features_cities);
-      map.removeLayer(features_cities_and_towns);
-      features_cities_and_towns = L.featureGroup(features_cities);
-      map.addLayer(features_cities_and_towns);
 
-      map.removeLayer(features_villages);
+      features_cities_and_towns = L.featureGroup(features_cities);
       features_villages = L.featureGroup(features_vill);
 
-
-
-      $( "span:contains('Cities from OSM')").siblings().attr('checked','checked');
-      //$( "span:contains('Villages')").siblings().attr('checked','checked');
-
-      $("span:contains('Villages')").siblings().click(function( event ) {
-           //layerClicked = window[event.target.value];
-          if (map.hasLayer(features_villages)) {
-             map.removeLayer(features_villages);
-          }
-          else{
-             map.addLayer(features_villages);
-          } ;
-       });
-
-       $("span:contains('Cities')").siblings().click(function( event ) {
-            //layerClicked = window[event.target.value];
-           if (map.hasLayer(features_cities_and_towns)) {
-              map.removeLayer(features_cities_and_towns);
-           }
-           else{
-              map.addLayer(features_cities_and_towns);
-           } ;
-        });
-
-
-      });
-
-      //config of the heatmap
+      //cities.push(JSON.stringify(features)
+      //cities = JSON.stringify(cities).replace("'","");
+      //console.log(features);
       var hotData = {
         max: 13,
         data: reduce
@@ -216,19 +165,24 @@
 
       var heatmapLayer = new HeatmapOverlay(cfg);
 
-      //Tiles
       var OpenStreetMap_HOT = L.tileLayer('http://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png', {
         maxZoom: 19,
         attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>, Tiles courtesy of <a href="http://hot.openstreetmap.org/" target="_blank">Humanitarian OpenStreetMap Team</a>'
       });
 
+      //From Mapbox
       var labels = L.tileLayer('http://{s}.tiles.mapbox.com/v4/mainfo.f3xwp14i/{z}/{x}/{y}.png?access_token=pk.eyJ1IjoibWFpbmZvIiwiYSI6ImRjMGNmMGE5ZjczYzc2NDU0MmFlNWQ3NThiYzRkYmRhIn0.Z9ZkL0wyzGyOyGMkcyFU1w');
 
       var tiles = L.tileLayer('http://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
         attribution: 'Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community'
       })
 
+
       var districts = L.tileLayer('http://{s}.tiles.mapbox.com/v4/mainfo.7tz6ko6r/{z}/{x}/{y}.png?access_token=pk.eyJ1IjoibWFpbmZvIiwiYSI6ImRjMGNmMGE5ZjczYzc2NDU0MmFlNWQ3NThiYzRkYmRhIn0.Z9ZkL0wyzGyOyGMkcyFU1w');
+
+      //var heatLayer = L.heatLayer(reduce,{radius: 20,blur: 30, maxZoom: 12});
+
+      //var heatmapLayer = L.heatLayer(reduce,{radius: 40,blur: 40});//gradient:{0.1:'#edf8fb',0.5:'#b3cde3',0.6:'#8c96c6',0.8: '#88419d'}
 
       var baseMaps = {
         "ESRI Satellite": tiles,
@@ -253,8 +207,51 @@
       heatmapLayer.setData(hotData);
 
       L.control.layers(baseMaps, overlayMaps,{collapsed:false}).addTo(map);
-      var graphicScale = L.control.graphicScale({fill:'fill'}).addTo(map);
+       var graphicScale = L.control.graphicScale({fill:'fill'}).addTo(map);
+      //var panelLayers = new L.Control.PanelLayers(baseLayers, overLayers);
 
+      //map.addControl(panelLayers);
+
+      //Supre le overlays machin.. Lorsque kle zoom est à 13 alors on met les villages.. losrqu'on passs à OSM on enleve les etiquette...
+      map.on('zoomend', function (e) {
+        myZoomHandler();
+      });
+
+      function myZoomHandler() {
+        var currentZoom = map.getZoom();
+        switch (currentZoom) {
+          case 12:
+          if (map.hasLayer(features_villages)) {
+            map.removeLayer(features_villages);
+          }
+          //map.removeLayer(features_villages);panelLayers._update();
+          $( "span:contains('Villages')").siblings().attr('disabled','disabled');
+          $( "span:contains('Villages')").parent().css("background-color","rgba(0, 0, 0, 0.3)");
+          break;
+          case 13:
+          $( "span:contains('Villages')").siblings().removeAttr('disabled');;
+          $( "span:contains('Villages')").parent().css("background-color","rgba(250, 250, 250, 1)");
+          break;
+          default:
+          $( "span:contains('Villages')").siblings().attr('disabled','disabled');
+          $( "span:contains('Villages')").parent().css("background-color","rgba(0, 0, 0, 0.3)");
+          break;
+        }
+      }
+      //On load
+      $( "span:contains('Villages')").siblings().attr('disabled','disabled');
+      $( "span:contains('Villages')").parent().css("background-color","rgba(0, 0, 0, 0.3)");
+
+      //Late CSS custom
+      $( "span:contains('Label')").css("font-weight","bold").css("color","#000");
+      $( "span:contains('Reports')").css("font-weight","bold").css("color","#000");
+      $( "span:contains('Background')").css("font-weight","bold").css("color","#000");
+
+    });
+
+
+
+    console.log(reduce);
 
   });
 

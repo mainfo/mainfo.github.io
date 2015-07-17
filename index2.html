@@ -158,8 +158,7 @@
 
       map.removeLayer(features_villages);
       features_villages = L.featureGroup(features_vill);
-      //map.addLayer(features_villages);
-      //console.log(features_villages);
+
 
 
       $( "span:contains('Cities from OSM')").siblings().attr('checked','checked');
@@ -168,11 +167,9 @@
       $("span:contains('Villages')").siblings().click(function( event ) {
            //layerClicked = window[event.target.value];
           if (map.hasLayer(features_villages)) {
-            console.log("yes");
              map.removeLayer(features_villages);
           }
           else{
-            console.log("no");
              map.addLayer(features_villages);
           } ;
        });
@@ -180,11 +177,9 @@
        $("span:contains('Cities')").siblings().click(function( event ) {
             //layerClicked = window[event.target.value];
            if (map.hasLayer(features_cities_and_towns)) {
-             console.log("yes");
               map.removeLayer(features_cities_and_towns);
            }
            else{
-             console.log("no");
               map.addLayer(features_cities_and_towns);
            } ;
         });
@@ -192,9 +187,7 @@
 
       });
 
-      //cities.push(JSON.stringify(features)
-      //cities = JSON.stringify(cities).replace("'","");
-      //console.log(features);
+      //config of the heatmap
       var hotData = {
         max: 13,
         data: reduce
@@ -223,24 +216,19 @@
 
       var heatmapLayer = new HeatmapOverlay(cfg);
 
+      //Tiles
       var OpenStreetMap_HOT = L.tileLayer('http://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png', {
         maxZoom: 19,
         attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>, Tiles courtesy of <a href="http://hot.openstreetmap.org/" target="_blank">Humanitarian OpenStreetMap Team</a>'
       });
 
-      //From Mapbox
       var labels = L.tileLayer('http://{s}.tiles.mapbox.com/v4/mainfo.f3xwp14i/{z}/{x}/{y}.png?access_token=pk.eyJ1IjoibWFpbmZvIiwiYSI6ImRjMGNmMGE5ZjczYzc2NDU0MmFlNWQ3NThiYzRkYmRhIn0.Z9ZkL0wyzGyOyGMkcyFU1w');
 
       var tiles = L.tileLayer('http://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
         attribution: 'Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community'
       })
 
-
       var districts = L.tileLayer('http://{s}.tiles.mapbox.com/v4/mainfo.7tz6ko6r/{z}/{x}/{y}.png?access_token=pk.eyJ1IjoibWFpbmZvIiwiYSI6ImRjMGNmMGE5ZjczYzc2NDU0MmFlNWQ3NThiYzRkYmRhIn0.Z9ZkL0wyzGyOyGMkcyFU1w');
-
-      //var heatLayer = L.heatLayer(reduce,{radius: 20,blur: 30, maxZoom: 12});
-
-      //var heatmapLayer = L.heatLayer(reduce,{radius: 40,blur: 40});//gradient:{0.1:'#edf8fb',0.5:'#b3cde3',0.6:'#8c96c6',0.8: '#88419d'}
 
       var baseMaps = {
         "ESRI Satellite": tiles,
@@ -265,56 +253,8 @@
       heatmapLayer.setData(hotData);
 
       L.control.layers(baseMaps, overlayMaps,{collapsed:false}).addTo(map);
-       var graphicScale = L.control.graphicScale({fill:'fill'}).addTo(map);
-      //var panelLayers = new L.Control.PanelLayers(baseLayers, overLayers);
+      var graphicScale = L.control.graphicScale({fill:'fill'}).addTo(map);
 
-      //map.addControl(panelLayers);
-
-      //Supre le overlays machin.. Lorsque kle zoom est à 13 alors on met les villages.. losrqu'on passs à OSM on enleve les etiquette...
-      map.on('zoomend', function (e) {
-        myZoomHandler();
-      });
-
-      function myZoomHandler() {
-        var currentZoom = map.getZoom();
-        switch (currentZoom) {
-          case 12:
-          //if (map.hasLayer(features_villages)) {
-          //  map.removeLayer(features_villages);
-          //}
-          //map.removeLayer(features_villages);panelLayers._update();
-          //$( "span:contains('Villages')").siblings().attr('disabled','disabled');
-          //$( "span:contains('Villages')").parent().css("background-color","rgba(0, 0, 0, 0.3)");
-          break;
-          case 13:
-          //map.removeLayer(features_villages);
-          //featuresGp_villages_zoomed = L.featureGroup(feature_villages_zoomed);
-          //map.addLayer(featuresGp_villages_zoomed);
-          //$( "span:contains('Villages')").siblings().removeAttr('disabled');;
-          //$( "span:contains('Villages')").parent().css("background-color","rgba(250, 250, 250, 1)");
-          break;
-          default:
-          //$( "span:contains('Villages')").siblings().attr('disabled','disabled');
-          //$( "span:contains('Villages')").parent().css("background-color","rgba(0, 0, 0, 0.3)");
-          break;
-        }
-      }
-
-
-      //On load
-      //$( "span:contains('Villages')").siblings().attr('disabled','disabled');
-      //$( "span:contains('Villages')").parent().css("background-color","rgba(0, 0, 0, 0.3)");
-
-      //Late CSS custom
-      //$( "span:contains('Label')").css("font-weight","bold").css("color","#000");
-      //$( "span:contains('Reports')").css("font-weight","bold").css("color","#000");
-      //$( "span:contains('Background')").css("font-weight","bold").css("color","#000");
-
-
-
-
-
-    console.log(reduce);
 
   });
 
