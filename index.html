@@ -48,6 +48,8 @@
     text-shadow: 0 0 0.1em black, 0 0 0.1em black,
           0 0 0.1em black,0 0 0.1em black,0 0 0.1em;
     color: white;
+    background-color: transparent;
+    border-color: transparent;
   }
   </style>
 </head>
@@ -115,12 +117,7 @@
       reduce.push(obj2);
     });
 
-    var createLabelIcon = function(labelClass,labelText){
-      return L.divIcon({
-        className: labelClass,
-        html: labelText
-      })
-    };
+
 
     //Get the layer OSM cities and town
     var features_cities_and_towns = "";
@@ -144,7 +141,8 @@
         }
         if(value.tags.place == "village"){
           //Create marker for villages
-          var village = L.marker(new L.LatLng(value.lat, value.lon), {icon:createLabelIcon("textLabelclass",value.tags.name)});
+          //var village = L.marker(new L.LatLng(value.lat, value.lon), {icon:createLabelIcon("textLabelclass",value.tags.name)});
+          var village = L.circleMarker([value.lat, value.lon],{ fillColor: "#fff", color:"#000",radius: 4 }).bindLabel(value.tags.name,{className:"textLabelclass",noHide: false ,direction:"auto",offset:[3,-15]});
           features_vill.push(village);
           //var villages_label_zoom = L.marker(new L.LatLng(value.lat, value.lon), {icon:createLabelIcon("textLabelclass",value.tags.name)});
           //feature_villages_zoomed.push(villages_label_zoom);
@@ -158,6 +156,27 @@
 
       map.removeLayer(features_villages);
       features_villages = L.featureGroup(features_vill);
+
+      console.log(features_villages);
+      var createLabelIcon = function(labelClass,labelText){
+        return L.divIcon({
+          className: labelClass,
+          html: labelText
+        })
+      };
+
+
+      _.each(features_villages, function(data){
+        _.each(data,function(layer){
+            layer.setStyle({radius :'0'});
+            layer.setStyle({stroke :false});
+            layer.setStyle({labelAnchor :[0,0]});
+            //layer.label._content = "Bla";
+            layer.label.className ="textLabelclass";
+            layer._labelNoHide=true;
+          });
+        });
+
 
 
 
@@ -254,6 +273,9 @@
 
       L.control.layers(baseMaps, overlayMaps,{collapsed:false}).addTo(map);
       var graphicScale = L.control.graphicScale({fill:'fill'}).addTo(map);
+
+
+
 
 
   });
