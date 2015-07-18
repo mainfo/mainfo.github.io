@@ -49,8 +49,6 @@
   <div class="update"></div>
   <div id="map"></div>
 
-  <!-- <script src="../node_modules/simpleheat/simpleheat.js"></script>
-  <script src="../src/HeatLayer.js"></script> -->
 
   <script src="src/HeatLayer.js"></script>
   <script src="src/heatmap2.js"></script>
@@ -66,15 +64,13 @@
   <script src="src/scale.js"></script>
 
 
-  <!--<script src="http://leaflet.github.io/Leaflet.markercluster/example/realworld.10000.js"></script>-->
-
   <script>
 
 
   $.getJSON("http://raw.githubusercontent.com/mainfo/data/master/data.json", function(data) {
     var heat = [];
     var last_update = data.last_update;
-    $(".update").html("Last update of the map: " + last_update);
+    $(".update").html("Last update of the data: " + last_update);
 
     //Get all the coodinates in one object
     var lsp = [];
@@ -92,10 +88,9 @@
       }
     });
 
-    //Get the count of report for each point
+    //Get the count of report for each couple of coordinates -> each point
     var gpby = _.groupBy(lsp,'name');
 
-    //Create  an object of the count of record per coordinates couple
     var reduce =[];
     $.each(gpby, function( index, value ) {
       ind = index.split("_");
@@ -104,7 +99,6 @@
         lat: ind[1],
         count:Math.sqrt(value.length)+5
       };
-      //var result = [+ind[1],+ind[0],String(value.length)];
       reduce.push(obj2);
     });
 

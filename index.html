@@ -6,6 +6,7 @@
   <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
   <link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.css" />
   <link rel="stylesheet" href="dist/leaflet.label.css"/>
+  <!--<link rel=stylesheet href="dist/colors.css">-->
   <link rel="stylesheet" href="dist/panel.css"/>
   <link rel="stylesheet" href="dist/scale.css"/>
   <script src="http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.js"></script>
@@ -30,7 +31,7 @@
     box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
     z-index:2000;
     right: 0px;
-    bottom: 20px;
+    bottom: 30px;
   }
   .labelvillages
   {
@@ -54,10 +55,25 @@
     border-color: transparent;
     z-index:5;
   }
+  .legend{
+    position: absolute;
+    padding: 6px 8px;
+    font: 14px/16px Arial, Helvetica, sans-serif;
+    color: #223;
+    background-color: rgba(255, 255, 255, 0.8);
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+    z-index:2000;
+    right: 0px;
+    bottom: 70px;
+    height:20px;
+    width: 150px;
+    background: linear-gradient(to right, blue 0%, green 33%, yellow 66%,red 100%);
+  }
   </style>
 </head>
 <body>
 
+  <!--<div class="legend"></div>-->
   <div class="update"></div>
   <div id="map"></div>
 
@@ -75,8 +91,6 @@
   <script src="src/FeatureGroup.Label.js"></script>
   <script src="src/panel.js"></script>
   <script src="src/scale.js"></script>
-
-
 
 
   <script>
@@ -181,11 +195,8 @@
         }
         if(value.tags.place == "village"){
           //Create marker for villages
-          //var village = L.marker(new L.LatLng(value.lat, value.lon), {icon:createLabelIcon("textLabelclass",value.tags.name)});
           var village = L.circleMarker([value.lat, value.lon],{ fillColor: "#fff", color:"#000",radius: 4 }).bindLabel(value.tags.name,{className:"textLabelclass",noHide: false ,direction:"right",offset:[3,-15]});
           features_vill.push(village);
-          //var villages_label_zoom = L.marker(new L.LatLng(value.lat, value.lon), {icon:createLabelIcon("textLabelclass",value.tags.name)});
-          //feature_villages_zoomed.push(villages_label_zoom);
         };
 
       });
@@ -234,7 +245,6 @@
               vil._leaflet_events.mouseout[0].action = L.BaseMarkerMethods.showLabel;
             });
           });
-          //features_cities_and_towns.bringToFront();
 
           if(layerdisab === true){
             map.addLayer(features_villages);
@@ -247,10 +257,8 @@
 
       $( "span:contains('Cities from OSM')").siblings().attr('checked','checked');
       $( "span:contains('Villages from OSM')").siblings().attr('checked','checked');
-      //$( "span:contains('Villages')").siblings().attr('checked','checked');
 
       $("span:contains('Villages')").siblings().click(function( event ) {
-        //layerClicked = window[event.target.value];
         if (map.hasLayer(features_villages)) {
           map.removeLayer(features_villages);
         }
@@ -260,7 +268,6 @@
       });
 
       $("span:contains('Cities')").siblings().click(function( event ) {
-        //layerClicked = window[event.target.value];
         if (map.hasLayer(features_cities_and_towns)) {
           map.removeLayer(features_cities_and_towns);
         }
@@ -281,7 +288,7 @@
       // radius should be small ONLY if scaleRadius is true (or small radius is intended)
       // if scaleRadius is false it will be the constant radius used in pixels
       "radius": 50,
-      "maxOpacity": .9,
+      "maxOpacity": 1,
       // scales the radius based on map zoom
       "scaleRadius": false,
       // if set to false the heatmap uses the global maximum for colorization
