@@ -46,10 +46,10 @@
   }
   .textLabelclass{
     white-space:nowrap;
-    font-weight: 300;
+    font-weight: 500;
     text-shadow: 0 0 0.1em black, 0 0 0.1em black,
-          0 0 0.1em black,0 0 0.1em black,0 0 0.1em;
-    color: white;
+    0 0 0.1em black,0 0 0.1em black,0 0 0.1em;
+    color: #fff;
     background-color: transparent;
     border-color: transparent;
     z-index:5;
@@ -61,8 +61,7 @@
   <div class="update"></div>
   <div id="map"></div>
 
-  <!-- <script src="../node_modules/simpleheat/simpleheat.js"></script>
-  <script src="../src/HeatLayer.js"></script> -->
+
 
   <script src="src/HeatLayer.js"></script>
   <script src="src/heatmap2.js"></script>
@@ -78,7 +77,7 @@
   <script src="src/scale.js"></script>
 
 
-  <!--<script src="http://leaflet.github.io/Leaflet.markercluster/example/realworld.10000.js"></script>-->
+
 
   <script>
 
@@ -109,13 +108,49 @@
 
     //Create  an object of the count of record per coordinates couple
     var reduce =[];
+
+    //Most preciosu function of the world
+    Object.size = function(obj) {
+        var size = 0, key;
+        for (key in obj) {
+            if (obj.hasOwnProperty(key)) size++;
+        }
+        return size;
+    };
+
+    var maxreport =[];
+
+    _.each(gpby, function( index, value ) {
+      //console.log(index);
+      var size = Object.size(index);
+      maxreport.push(size);
+    });
+
+    Array.prototype.max = function() {
+      return Math.max.apply(null, this);
+    };
+
+    Array.prototype.min = function() {
+      return Math.min.apply(null, this);
+    };
+
+    var max = maxreport.max();
+    console.log(max);
+
     $.each(gpby, function( index, value ) {
       ind = index.split("_");
+      var size = Object.size(value);
+
+      //Calcul la proportionalité
+      var numb = Math.sqrt(size)*Math.sqrt(max);
+
       obj2 = {
         lng : ind[0],
         lat: ind[1],
-        count:Math.sqrt(value.length)+5
+        count: Math.floor(numb)
       };
+      // value/ largest value) x max. symbol size
+      console.log(obj2.count);
       //var result = [+ind[1],+ind[0],String(value.length)];
       reduce.push(obj2);
     });
@@ -161,6 +196,7 @@
 
       map.removeLayer(features_villages);
       features_villages = L.featureGroup(features_vill);
+      map.addLayer(features_villages);
 
       map.on('zoomend', function (e) {
         myZoomHandler();
@@ -168,26 +204,19 @@
 
       function myZoomHandler() {
         var currentZoom = map.getZoom();
-        console.log(currentZoom);
         switch (currentZoom) {
           case 12:
           map.removeLayer(features_villages);
           features_villages = L.featureGroup(features_vill);
           console.log(features_villages);
-
           _.each(features_villages, function(data){
             _.each(data,function(vil){
-                vil.setStyle({radius :'4'});
-                vil.setStyle({stroke :true});
-                vil._labelNoHide=false;
-                //vil.setStyle({labelAnchor :[0,0]});
-                //vil._leaflet_events.mouseout = [L.BaseMarkerMethods.hideLabel];
-                //layer.label._content = "Bla";
-                //vil.label.className ="";
-                vil._leaflet_events.mouseout[0].action = L.BaseMarkerMethods.hideLabel;
-
-              });
+              vil.setStyle({radius :'4'});
+              vil.setStyle({stroke :true});
+              vil._labelNoHide=false;
+              vil._leaflet_events.mouseout[0].action = L.BaseMarkerMethods.hideLabel;
             });
+          });
           map.addLayer(features_villages);
           break;
           case 13:
@@ -196,140 +225,121 @@
 
           var layerdisab = $( "span:contains('Villages')").siblings().is(':checked');
 
-          console.log(layerdisab);
-
           _.each(features_villages, function(data){
             _.each(data,function(vil){
-                //vil.setStyle({radius :'0'});
-                //vil.setStyle({stroke :false});
-                //vil.setStyle({labelAnchor :[0,0]});
-                //layer.label._content = "Bla";
-                vil.label.className ="textLabelclass";
-                vil._labelNoHide=true;
-                vil._leaflet_events.mouseout[0].action = L.BaseMarkerMethods.showLabel;
-                //vil.options.clickable=false;
-                //vil.on('mouseout', function(evt) {
-                  //evt.target is the marker that is being moused over
-                  //bindPopup() does not need to be called here if it was already called
-                  //somewhere else for this marker.
-                  //evt.target.bindPopup('hi').openPopup();
-                  //L.BaseMarkerMethods.showLabel;
-                //});
-                //vil._hasLabelHandlers=false;
-              });
-            });
-            //features_cities_and_towns.bringToFront();
 
-            if(layerdisab === true){
+              vil.label.className ="textLabelclass";
+              vil._labelNoHide=true;
+              vil._leaflet_events.mouseout[0].action = L.BaseMarkerMethods.showLabel;
+            });
+          });
+          //features_cities_and_towns.bringToFront();
+
+          if(layerdisab === true){
             map.addLayer(features_villages);
-            };
-          //$( "span:contains('Villages')").siblings().removeAttr('disabled');;
-          //$( "span:contains('Villages')").parent().css("background-color","rgba(250, 250, 250, 1)");
+          };
           break;
 
         }
       }
 
 
-        console.log(features_villages);
-
-
-
       $( "span:contains('Cities from OSM')").siblings().attr('checked','checked');
+      $( "span:contains('Villages from OSM')").siblings().attr('checked','checked');
       //$( "span:contains('Villages')").siblings().attr('checked','checked');
 
       $("span:contains('Villages')").siblings().click(function( event ) {
-           //layerClicked = window[event.target.value];
-          if (map.hasLayer(features_villages)) {
-             map.removeLayer(features_villages);
-          }
-          else{
-             map.addLayer(features_villages);
-          } ;
-       });
-
-       $("span:contains('Cities')").siblings().click(function( event ) {
-            //layerClicked = window[event.target.value];
-           if (map.hasLayer(features_cities_and_towns)) {
-              map.removeLayer(features_cities_and_towns);
-           }
-           else{
-              map.addLayer(features_cities_and_towns);
-           } ;
-        });
-
-
+        //layerClicked = window[event.target.value];
+        if (map.hasLayer(features_villages)) {
+          map.removeLayer(features_villages);
+        }
+        else{
+          map.addLayer(features_villages);
+        } ;
       });
 
-      //config of the heatmap
-      var hotData = {
-        max: 13,
-        data: reduce
-      };
-      var cfg = {
-        // radius should be small ONLY if scaleRadius is true (or small radius is intended)
-        // if scaleRadius is false it will be the constant radius used in pixels
-        "radius": 50,
-        "maxOpacity": .9,
-        // scales the radius based on map zoom
-        "scaleRadius": false,
-        // if set to false the heatmap uses the global maximum for colorization
-        // if activated: uses the data maximum within the current map boundaries
-        //   (there will always be a red spot with useLocalExtremas true)
-        "useLocalExtrema": false,
-        // which field name in your data represents the latitude - default "lat"
-        latField: 'lat',
-        // which field name in your data represents the longitude - default "lng"
-        lngField: 'lng',
-        // which field name in your data represents the data value - default "value"
-        valueField: 'count',
-        //gradient:{0.2:'#01ABE9',0.6:'#C3CED0',0.7: '#F54B1A'}
-        //gradient:{0.1:'#01ABE9',0.5:'#1B346C',0.6:'#F54B1A',0.8: '#01ABE9',1:'#01ABE9'}
-      };
-
-
-      var heatmapLayer = new HeatmapOverlay(cfg);
-
-      //Tiles
-      var OpenStreetMap_HOT = L.tileLayer('http://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png', {
-        maxZoom: 19,
-        attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>, Tiles courtesy of <a href="http://hot.openstreetmap.org/" target="_blank">Humanitarian OpenStreetMap Team</a>'
+      $("span:contains('Cities')").siblings().click(function( event ) {
+        //layerClicked = window[event.target.value];
+        if (map.hasLayer(features_cities_and_towns)) {
+          map.removeLayer(features_cities_and_towns);
+        }
+        else{
+          map.addLayer(features_cities_and_towns);
+        } ;
       });
 
-      var labels = L.tileLayer('http://{s}.tiles.mapbox.com/v4/mainfo.f3xwp14i/{z}/{x}/{y}.png?access_token=pk.eyJ1IjoibWFpbmZvIiwiYSI6ImRjMGNmMGE5ZjczYzc2NDU0MmFlNWQ3NThiYzRkYmRhIn0.Z9ZkL0wyzGyOyGMkcyFU1w');
 
-      var tiles = L.tileLayer('http://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
-        attribution: 'Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community'
-      })
+    });
 
-      var districts = L.tileLayer('http://{s}.tiles.mapbox.com/v4/mainfo.7tz6ko6r/{z}/{x}/{y}.png?access_token=pk.eyJ1IjoibWFpbmZvIiwiYSI6ImRjMGNmMGE5ZjczYzc2NDU0MmFlNWQ3NThiYzRkYmRhIn0.Z9ZkL0wyzGyOyGMkcyFU1w');
-
-      var baseMaps = {
-        "ESRI Satellite": tiles,
-        "Humanitarian Open Street Map (OSM)":OpenStreetMap_HOT
-      };
-
-      var overlayMaps = {
-        "Heat map of the reports collected": heatmapLayer,
-        "Districts boundaries" : districts,
-        "Cities from OSM": features_cities_and_towns,
-        "Villages from OSM":features_villages
-
-      };
-
-      //Restric to bounds
-      var southWest = L.latLng(16.531606,107.0103),
-      northEast = L.latLng(16.801204,108.41921),
-      bounds = L.latLngBounds(southWest, northEast);
-
-      var map = L.map('map',{maxZoom: 13,minZoom:12, maxBounds: bounds,layers: [tiles,features_cities_and_towns,districts,heatmapLayer]}).setView([16.68, 107.25], 12);
-
-      heatmapLayer.setData(hotData);
-
-      L.control.layers(baseMaps, overlayMaps,{collapsed:false}).addTo(map);
-      var graphicScale = L.control.graphicScale({fill:'fill'}).addTo(map);
+    //config of the heatmap
+    var hotData = {
+      max: max,
+      data: reduce
+    };
+    var cfg = {
+      // radius should be small ONLY if scaleRadius is true (or small radius is intended)
+      // if scaleRadius is false it will be the constant radius used in pixels
+      "radius": 50,
+      "maxOpacity": .9,
+      // scales the radius based on map zoom
+      "scaleRadius": false,
+      // if set to false the heatmap uses the global maximum for colorization
+      // if activated: uses the data maximum within the current map boundaries
+      //   (there will always be a red spot with useLocalExtremas true)
+      "useLocalExtrema": false,
+      // which field name in your data represents the latitude - default "lat"
+      latField: 'lat',
+      // which field name in your data represents the longitude - default "lng"
+      lngField: 'lng',
+      // which field name in your data represents the data value - default "value"
+      valueField: 'count',
+      //gradient:{0.2:'#01ABE9',0.6:'#C3CED0',0.7: '#F54B1A'}
+      gradient:{0.25:'blue',0.5:'green',0.75:'yellow',1:'red'}
+    };
 
 
+    var heatmapLayer = new HeatmapOverlay(cfg);
+
+    //Tiles
+    var OpenStreetMap_HOT = L.tileLayer('http://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png', {
+      maxZoom: 19,
+      attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>, Tiles courtesy of <a href="http://hot.openstreetmap.org/" target="_blank">Humanitarian OpenStreetMap Team</a>'
+    });
+
+    var labels = L.tileLayer('http://{s}.tiles.mapbox.com/v4/mainfo.f3xwp14i/{z}/{x}/{y}.png?access_token=pk.eyJ1IjoibWFpbmZvIiwiYSI6ImRjMGNmMGE5ZjczYzc2NDU0MmFlNWQ3NThiYzRkYmRhIn0.Z9ZkL0wyzGyOyGMkcyFU1w');
+
+    var tiles = L.tileLayer('http://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+      attribution: 'Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community'
+    })
+
+    var districts = L.tileLayer('http://{s}.tiles.mapbox.com/v4/mainfo.7tz6ko6r/{z}/{x}/{y}.png?access_token=pk.eyJ1IjoibWFpbmZvIiwiYSI6ImRjMGNmMGE5ZjczYzc2NDU0MmFlNWQ3NThiYzRkYmRhIn0.Z9ZkL0wyzGyOyGMkcyFU1w');
+
+    var baseMaps = {
+      "ESRI Satellite": tiles,
+      "Humanitarian Open Street Map (OSM)":OpenStreetMap_HOT
+    };
+
+    var overlayMaps = {
+      "Heat map of the reports collected": heatmapLayer,
+      "Districts boundaries" : districts,
+      "Cities from OSM": features_cities_and_towns,
+      "Villages from OSM":features_villages
+
+    };
+
+    //Restric to bounds
+    var southWest = L.latLng(16.531606,107.0103),
+    northEast = L.latLng(16.801204,107.51921),
+    bounds = L.latLngBounds(southWest, northEast);
+
+    var map = L.map('map',{maxZoom: 13,minZoom:12, maxBounds: bounds,layers: [tiles,features_cities_and_towns,features_villages,districts,heatmapLayer]}).setView([16.68, 107.25], 12);
+
+    heatmapLayer.setData(hotData);
+
+    L.control.layers(baseMaps, overlayMaps,{collapsed:false}).addTo(map);
+    var graphicScale = L.control.graphicScale({fill:'fill'}).addTo(map);
+
+    console.log(gpby);
   });
 
 
