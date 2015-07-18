@@ -212,8 +212,8 @@
           console.log(features_villages);
           _.each(features_villages, function(data){
             _.each(data,function(vil){
-              vil.setStyle({radius :'4'});
-              vil.setStyle({stroke :true});
+              //vil.setStyle({radius :'4'});
+              //vil.setStyle({stroke :true});
               vil._labelNoHide=false;
               vil._leaflet_events.mouseout[0].action = L.BaseMarkerMethods.hideLabel;
             });
