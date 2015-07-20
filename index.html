@@ -99,23 +99,26 @@
 
   // On the server will be data.json
   $.getJSON("http://raw.githubusercontent.com/mainfo/data/master/data.json", function(data) {
-    
+
     //Get the value of the last update.
     var last_update = data.last_update;
     $(".update").html("Last update of the map: " + last_update);
 
-    //Get all the coodinates in one object
+    //Get all the coodinates in one object from the json
     var lsp = [];
     var geojsonheat = L.geoJson(data, {
       onEachFeature: function (feature, layer) {
         var lng = feature.geometry.coordinates[0];
         var lat = feature.geometry.coordinates[1];
         var date_add = feature.properties.date_add;
+
+        //create an oject that will allow us to group by. Here we're going to group by the conbinaison of lat_lng
         obj = {
           name: lng+"_"+lat,
           lat: lat,
           lng:lng
         };
+        //For each obj created we're pushing them into the lsp array. At the end of the loop lsp will contain all the data.
         lsp.push(obj);
       }
     });
@@ -123,10 +126,10 @@
     //Get the count of report for each point
     var gpby = _.groupBy(lsp,'name');
 
-    //Create  an object of the count of record per coordinates couple
+    //Create  an object to store the content of the loop
     var reduce =[];
 
-    //Most preciosu function of the world
+    //Most precious function of the world that will count the number of array inside an object. = number of report per combinaison lat_lng
     Object.size = function(obj) {
         var size = 0, key;
         for (key in obj) {
@@ -135,6 +138,7 @@
         return size;
     };
 
+    //maxreport will store the array of conbinaison lat_lng
     var maxreport =[];
 
     _.each(gpby, function( index, value ) {
@@ -151,11 +155,15 @@
       return Math.min.apply(null, this);
     };
 
+    //And max is the variable equal to the max number of report for each point in the total of combinaison lat_lng
     var max = maxreport.max();
     console.log(max);
 
+    // For each point we're going to re create an object that we'll be the lat the lng and the number of report
     $.each(gpby, function( index, value ) {
+      //we split the index to get the lat and lng
       ind = index.split("_");
+
       var size = Object.size(value);
 
       //Calcul la proportionalité
