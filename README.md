@@ -69,3 +69,14 @@ It will run the script every first minute of every hour and it will create a log
 Yeah :)
 
 ## The heatmap
+
+FYI The Overpass Api query in Overpass Turbo
+```
+[out:json];
+(
+  node["place"~"city|town|village"]({{bbox}});
+);
+out body;
+>;
+out skel qt;
+```

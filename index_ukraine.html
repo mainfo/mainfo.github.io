@@ -183,112 +183,112 @@
 
 
 
-    //Get the layer OSM cities and town
-    var features_cities_and_towns = "";
-    var features_villages ="";
-    features_villages = L.featureGroup(null);
-    features_cities_and_towns = L.featureGroup(null);
+    // //Get the layer OSM cities and town
+    // var features_cities_and_towns = "";
+    // var features_villages ="";
+    // features_villages = L.featureGroup(null);
+    // features_cities_and_towns = L.featureGroup(null);
 
-    //CAll to the Overpass API
-    $.getJSON("http://overpass-api.de/api/interpreter?data=%5Bout%3Ajson%5D%3B%0A%28%0A%20%20node%5B%22place%22~%22city%7Ctown%7Cvillage%22%5D%2816.18038632955662%2C106.578369140625%2C17.456235599424733%2C107.83355712890625%29%3B%0A%29%3B%0Aout%20body%3B%0A%3E%3B%0Aout%20skel%20qt%3B", function(cities_result) {
-      cities_all = cities_result.elements;
-      features_cities = [];
-      features_vill = [];
-
-      $.each(cities_all, function( index, value ) {
-        //console.log(index, value);
-        var place = { id:index,lat:value.lat,lng:value.lon,name:value.tags.name,place:value.tags.place} ;
-
-        if(value.tags.place == "city"||value.tags.place=="town"){
-          //Create marker for cities and towns
-          var circle_city = L.circleMarker([value.lat, value.lon], { fillColor: "#fff", color:"#000",radius: 7 }).bindLabel(value.tags.name, { noHide: true });
-          features_cities.push(circle_city);
-        }
-        if(value.tags.place == "village"){
-          //Create marker for villages
-          var village = L.circleMarker([value.lat, value.lon],{ fillColor: "#fff", color:"#000",radius: 4 }).bindLabel(value.tags.name,{className:"textLabelclass",noHide: false ,direction:"right",offset:[3,-15]});
-          features_vill.push(village);
-        };
-
-      });
-
-      //features_cities_and_towns.push(features_cities);
-      map.removeLayer(features_cities_and_towns);
-      features_cities_and_towns = L.featureGroup(features_cities);
-      map.addLayer(features_cities_and_towns);
-
-      map.removeLayer(features_villages);
-      features_villages = L.featureGroup(features_vill);
-      map.addLayer(features_villages);
-
-      map.on('zoomend', function (e) {
-        myZoomHandler();
-      });
-
-      function myZoomHandler() {
-        var currentZoom = map.getZoom();
-        switch (currentZoom) {
-          case 12:
-          map.removeLayer(features_villages);
-          features_villages = L.featureGroup(features_vill);
-          console.log(features_villages);
-          _.each(features_villages, function(data){
-            _.each(data,function(vil){
-              //vil.setStyle({radius :'4'});
-              //vil.setStyle({stroke :true});
-              vil._labelNoHide=false;
-              vil._leaflet_events.mouseout[0].action = L.BaseMarkerMethods.hideLabel;
-            });
-          });
-          map.addLayer(features_villages);
-          break;
-          case 13:
-          map.removeLayer(features_villages);
-          features_villages = L.featureGroup(features_vill);
-
-          var layerdisab = $( "span:contains('Villages')").siblings().is(':checked');
-
-          _.each(features_villages, function(data){
-            _.each(data,function(vil){
-
-              vil.label.className ="textLabelclass";
-              vil._labelNoHide=true;
-              vil._leaflet_events.mouseout[0].action = L.BaseMarkerMethods.showLabel;
-            });
-          });
-
-          if(layerdisab === true){
-            map.addLayer(features_villages);
-          };
-          break;
-
-        }
-      }
-
-
-      $( "span:contains('Cities from OSM')").siblings().attr('checked','checked');
-      $( "span:contains('Villages from OSM')").siblings().attr('checked','checked');
-
-      $("span:contains('Villages')").siblings().click(function( event ) {
-        if (map.hasLayer(features_villages)) {
-          map.removeLayer(features_villages);
-        }
-        else{
-          map.addLayer(features_villages);
-        } ;
-      });
-
-      $("span:contains('Cities')").siblings().click(function( event ) {
-        if (map.hasLayer(features_cities_and_towns)) {
-          map.removeLayer(features_cities_and_towns);
-        }
-        else{
-          map.addLayer(features_cities_and_towns);
-        } ;
-      });
-
-
-    });
+    // //CAll to the Overpass API
+    // $.getJSON("http://overpass-api.de/api/interpreter?data=%5Bout%3Ajson%5D%3B%0A%28%0A%20%20node%5B%22place%22~%22city%7Ctown%7Cvillage%22%5D%2847.30903424774781%2C36.650390625%2C49.1314084139986%2C40.177001953125%29%3B%0A%29%3B%0Aout%20body%3B%0A%3E%3B%0Aout%20skel%20qt%3B", function(cities_result) {
+    //   cities_all = cities_result.elements;
+    //   features_cities = [];
+    //   features_vill = [];
+    //
+    //   $.each(cities_all, function( index, value ) {
+    //     //console.log(index, value);
+    //     var place = { id:index,lat:value.lat,lng:value.lon,name:value.tags.name,place:value.tags.place} ;
+    //
+    //     if(value.tags.place == "city"||value.tags.place=="town"){
+    //       //Create marker for cities and towns
+    //       var circle_city = L.circleMarker([value.lat, value.lon], { fillColor: "#fff", color:"#000",radius: 7 }).bindLabel(value.tags.name, { noHide: true });
+    //       features_cities.push(circle_city);
+    //     }
+    //     if(value.tags.place == "village"){
+    //       //Create marker for villages
+    //       var village = L.circleMarker([value.lat, value.lon],{ fillColor: "#fff", color:"#000",radius: 4 }).bindLabel(value.tags.name,{className:"textLabelclass",noHide: false ,direction:"right",offset:[3,-15]});
+    //       features_vill.push(village);
+    //     };
+    //
+    //   });
+    //
+    //   //features_cities_and_towns.push(features_cities);
+    //   map.removeLayer(features_cities_and_towns);
+    //   features_cities_and_towns = L.featureGroup(features_cities);
+    //   map.addLayer(features_cities_and_towns);
+    //
+    //   map.removeLayer(features_villages);
+    //   features_villages = L.featureGroup(features_vill);
+    //   map.addLayer(features_villages);
+    //
+    //   map.on('zoomend', function (e) {
+    //     myZoomHandler();
+    //   });
+    //
+    //   function myZoomHandler() {
+    //     var currentZoom = map.getZoom();
+    //     switch (currentZoom) {
+    //       case 12:
+    //       map.removeLayer(features_villages);
+    //       features_villages = L.featureGroup(features_vill);
+    //       console.log(features_villages);
+    //       _.each(features_villages, function(data){
+    //         _.each(data,function(vil){
+    //           //vil.setStyle({radius :'4'});
+    //           //vil.setStyle({stroke :true});
+    //           vil._labelNoHide=false;
+    //           vil._leaflet_events.mouseout[0].action = L.BaseMarkerMethods.hideLabel;
+    //         });
+    //       });
+    //       map.addLayer(features_villages);
+    //       break;
+    //       case 13:
+    //       map.removeLayer(features_villages);
+    //       features_villages = L.featureGroup(features_vill);
+    //
+    //       var layerdisab = $( "span:contains('Villages')").siblings().is(':checked');
+    //
+    //       _.each(features_villages, function(data){
+    //         _.each(data,function(vil){
+    //
+    //           vil.label.className ="textLabelclass";
+    //           vil._labelNoHide=true;
+    //           vil._leaflet_events.mouseout[0].action = L.BaseMarkerMethods.showLabel;
+    //         });
+    //       });
+    //
+    //       if(layerdisab === true){
+    //         map.addLayer(features_villages);
+    //       };
+    //       break;
+    //
+    //     }
+    //   }
+    //
+    //
+    //   $( "span:contains('Cities from OSM')").siblings().attr('checked','checked');
+    //   $( "span:contains('Villages from OSM')").siblings().attr('checked','checked');
+    //
+    //   $("span:contains('Villages')").siblings().click(function( event ) {
+    //     if (map.hasLayer(features_villages)) {
+    //       map.removeLayer(features_villages);
+    //     }
+    //     else{
+    //       map.addLayer(features_villages);
+    //     } ;
+    //   });
+    //
+    //   $("span:contains('Cities')").siblings().click(function( event ) {
+    //     if (map.hasLayer(features_cities_and_towns)) {
+    //       map.removeLayer(features_cities_and_towns);
+    //     }
+    //     else{
+    //       map.addLayer(features_cities_and_towns);
+    //     } ;
+    //   });
+    //
+    //
+    // });
 
     //config of the heatmap
     var hotData = {
@@ -320,7 +320,7 @@
     var heatmapLayer = new HeatmapOverlay(cfg);
 
     //Tiles
-    var OpenStreetMap_HOT = L.tileLayer('http://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png', {
+    var OpenStreetMap_HOT = L.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
       maxZoom: 19,
       attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>, Tiles courtesy of <a href="http://hot.openstreetmap.org/" target="_blank">Humanitarian OpenStreetMap Team</a>'
     });
@@ -334,15 +334,15 @@
     var districts = L.tileLayer('http://{s}.tiles.mapbox.com/v4/mainfo.7tz6ko6r/{z}/{x}/{y}.png?access_token=pk.eyJ1IjoibWFpbmZvIiwiYSI6ImRjMGNmMGE5ZjczYzc2NDU0MmFlNWQ3NThiYzRkYmRhIn0.Z9ZkL0wyzGyOyGMkcyFU1w');
 
     var baseMaps = {
-      "ESRI Satellite": tiles,
-      "Humanitarian Open Street Map (OSM)":OpenStreetMap_HOT
+      "Open Street Map (OSM)":OpenStreetMap_HOT,
+      "ESRI Satellite": tiles
     };
 
     var overlayMaps = {
-      "Heat map of the approuved reports": heatmapLayer,
-      "Districts boundaries" : districts,
-      "Cities from OSM": features_cities_and_towns,
-      "Villages from OSM":features_villages
+      "Heat map of the approuved reports": heatmapLayer
+      //"Districts boundaries" : districts
+      //"Cities from OSM": features_cities_and_towns,
+      //"Villages from OSM":features_villages
 
     };
 
@@ -351,7 +351,9 @@
     northEast = L.latLng(42.637939,49.703168),
     bounds = L.latLngBounds(southWest, northEast);
 
-    var map = L.map('map',{maxZoom: 13,minZoom:12, maxBounds: bounds,layers: [tiles,features_cities_and_towns,features_villages,districts,heatmapLayer]}).setView([38.699341,48.374497], 12);
+    //var map = L.map('map',{maxZoom: 13,minZoom:10, maxBounds: bounds,layers: [tiles,features_cities_and_towns,features_villages,districts,heatmapLayer]}).setView([48.374497,38.699341], 10);
+    var map = L.map('map',{maxZoom: 13,minZoom:1, layers: [OpenStreetMap_HOT,heatmapLayer]}).setView([48.374497,38.699341], 9);
+
 
     heatmapLayer.setData(hotData);
 
