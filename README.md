@@ -7,7 +7,7 @@ Connect to the server in SSH
 mkdir mapps
 cd mapps
 ```
-To install the mysql librairy :
+Install the python mysql librairy :
 
 ```
 sudo apt-get install libmysqlclient-dev
