@@ -69,8 +69,8 @@ Yeah :)
 
 ## The heatmap
 
-For Vietnam we are using an Overpass API query to show all the villages.. Even the ones that are not displayed in OSM hot
-Ukraine however doesn't need anymore villages label.. Everything is mapped there.
+For Vietnam we are using an Overpass API query to show all the villages.. Even the ones that are not displayed in OSM.
+Ukraine doesn't need anymore villages label.. Everything is mapped there.
 
 Install GIT
 ```
