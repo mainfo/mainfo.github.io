@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Mainfo</title>
+  <title>MApps</title>
   <meta http-equiv="Content-Language" content="fr" />
   <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
   <link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.css" />
@@ -346,12 +346,12 @@
 
     };
 
-    //Restric to bounds
-    var southWest = L.latLng(16.531606,107.0103),
-    northEast = L.latLng(16.801204,107.51921),
+    //Restric to bounds34.760742,47.010226,42.637939,49.703168
+    var southWest = L.latLng(34.760742,47.010226),
+    northEast = L.latLng(42.637939,49.703168),
     bounds = L.latLngBounds(southWest, northEast);
 
-    var map = L.map('map',{maxZoom: 13,minZoom:12, maxBounds: bounds,layers: [tiles,features_cities_and_towns,features_villages,districts,heatmapLayer]}).setView([16.68, 107.25], 12);
+    var map = L.map('map',{maxZoom: 13,minZoom:12, maxBounds: bounds,layers: [tiles,features_cities_and_towns,features_villages,districts,heatmapLayer]}).setView([38.699341,48.374497], 12);
 
     heatmapLayer.setData(hotData);
 

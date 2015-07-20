@@ -1,6 +1,6 @@
 # mine info
 
-## Export the coordinates to a geojson
+## Export the blurry coordinates to a geojson
 
 Connect to the server in SSH
 ```
@@ -52,4 +52,20 @@ And run the script
 python usha_get_loc.py
 ```
 And it should have created a data.json file in the data folder and in the /var/www/publicmap/map/ folder
+
 Yeah :)
+
+## Run the script every hour
+
+```
+crontab -e
+```
+At the end paste the line:
+```
+ 0 * * * * python /home/cartong/mapps/usha_get_loc.py > ~/robo-heat.log 2>&1
+```
+It will run the script every first minute of every hour and it will create a log file
+
+Yeah :)
+
+## The heatmap
