@@ -111,6 +111,7 @@ Rename index_ukraine.html as index.html
 ```
 mv index_ukraine.html index.html
 ```
+You may have to change the source of the data to just data.json after $getJSON
 Run the python script to get the data
 ```
 cd /home/cartong/mapps
