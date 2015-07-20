@@ -51,5 +51,5 @@ And run the script
 ```
 python usha_get_loc.py
 ```
-And it should have create a data.json file in the data folder and in the /var/www/publicmap/map/ folder
+And it should have created a data.json file in the data folder and in the /var/www/publicmap/map/ folder
 Yeah :)
