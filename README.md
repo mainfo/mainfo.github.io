@@ -23,7 +23,7 @@ Create the python file
 ```
 touch usha_get_loc.py
 ```
-Enter the file and copy paste the script
+Enter the file and copy paste the script usha_get_loc.py that is in this repo
 ```
 nano usha_get_loc.py
 ```
