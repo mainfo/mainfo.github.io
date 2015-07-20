@@ -46,7 +46,7 @@ sudo chown cartong map
 Go back to the mapps folder
 ```
 cd /home/cartong/mapps/
-``
+```
 And run the script
 ```
 python usha_get_loc.py
