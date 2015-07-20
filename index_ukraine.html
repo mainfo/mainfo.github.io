@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Mainfo</title>
+  <meta http-equiv="Content-Language" content="fr" />
+  <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+  <link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.css" />
+  <link rel="stylesheet" href="dist/leaflet.label.css"/>
+  <!--<link rel=stylesheet href="dist/colors.css">-->
+  <link rel="stylesheet" href="dist/panel.css"/>
+  <link rel="stylesheet" href="dist/scale.css"/>
+  <script src="http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.js"></script>
+  <script src="http://code.jquery.com/jquery-2.1.0.min.js"></script>
+  <script src="http://underscorejs.org/underscore.js"></script>
+  <style>
+
+  body {
+    padding: 0;
+    margin: 0;
+  }
+  html, body, #map {
+    height: 100%;
+    width: 100%;
+  }
+  .update {
+    position: absolute;
+    padding: 6px 8px;
+    font: 14px/16px Arial, Helvetica, sans-serif;
+    color: #223;
+    background-color: rgba(255, 255, 255, 0.8);
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+    z-index:2000;
+    right: 0px;
+    bottom: 30px;
+  }
+  .labelvillages
+  {
+    color: #111;
+    display: block;
+    font: 10px/20px "Helvetica Neue", Arial, Helvetica, sans-serif;
+    z-index: 6;
+  }
+  .leaflet-control-layers-expanded {
+    background: rgba(250, 250, 250, 0.7) none repeat scroll 0 0;
+    color: #333;
+    padding: 6px 10px 6px 6px;
+  }
+  .textLabelclass{
+    white-space:nowrap;
+    font-weight: 500;
+    text-shadow: 0 0 0.1em black, 0 0 0.1em black,
+    0 0 0.1em black,0 0 0.1em black,0 0 0.1em;
+    color: #fff;
+    background-color: transparent;
+    border-color: transparent;
+    z-index:5;
+  }
+  .legend{
+    position: absolute;
+    padding: 6px 8px;
+    font: 14px/16px Arial, Helvetica, sans-serif;
+    color: #223;
+    background-color: rgba(255, 255, 255, 0.8);
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+    z-index:2000;
+    right: 0px;
+    bottom: 70px;
+    height:20px;
+    width: 150px;
+    background: linear-gradient(to right, blue 0%, green 33%, yellow 66%,red 100%);
+  }
+  </style>
+</head>
+<body>
+
+  <!--<div class="legend"></div>-->
+  <div class="update"></div>
+  <div id="map"></div>
+
+
+
+  <script src="src/HeatLayer.js"></script>
+  <script src="src/heatmap2.js"></script>
+  <script src="src/simpleheat.js"></script>
+  <script src="src/Label.js"></script>
+  <script src="src/BaseMarkerMethods.js"></script>
+  <script src="src/Marker.Label.js"></script>
+  <script src="src/CircleMarker.Label.js"></script>
+  <script src="src/Path.Label.js"></script>
+  <script src="src/Map.Label.js"></script>
+  <script src="src/FeatureGroup.Label.js"></script>
+  <script src="src/panel.js"></script>
+  <script src="src/scale.js"></script>
+
+
+  <script>
+
+  //First thing call the data that are update every hour
+
+  // On the server will be data.json
+  $.getJSON("http://raw.githubusercontent.com/mainfo/data/master/data.json", function(data) {
+
+    //Get the value of the last update.
+    var last_update = data.last_update;
+    $(".update").html("Last update of the map: " + last_update);
+
+    //Get all the coodinates in one object from the json
+    var lsp = [];
+    var geojsonheat = L.geoJson(data, {
+      onEachFeature: function (feature, layer) {
+        var lng = feature.geometry.coordinates[0];
+        var lat = feature.geometry.coordinates[1];
+        var date_add = feature.properties.date_add;
+
+        //create an oject that will allow us to group by. Here we're going to group by the conbinaison of lat_lng
+        obj = {
+          name: lng+"_"+lat,
+          lat: lat,
+          lng:lng
+        };
+        //For each obj created we're pushing them into the lsp array. At the end of the loop lsp will contain all the data.
+        lsp.push(obj);
+      }
+    });
+
+    //Get the count of report for each point
+    var gpby = _.groupBy(lsp,'name');
+
+    //Create  an object to store the content of the loop
+    var reduce =[];
+
+    //Most precious function of the world that will count the number of array inside an object. = number of report per combinaison lat_lng
+    Object.size = function(obj) {
+        var size = 0, key;
+        for (key in obj) {
+            if (obj.hasOwnProperty(key)) size++;
+        }
+        return size;
+    };
+
+    //maxreport will store the array of conbinaison lat_lng
+    var maxreport =[];
+
+    _.each(gpby, function( index, value ) {
+      //console.log(index);
+      var size = Object.size(index);
+      maxreport.push(size);
+    });
+
+    Array.prototype.max = function() {
+      return Math.max.apply(null, this);
+    };
+
+    Array.prototype.min = function() {
+      return Math.min.apply(null, this);
+    };
+
+    //And max is the variable equal to the max number of report for each point in the total of combinaison lat_lng
+    var max = maxreport.max();
+    console.log(max);
+
+    // For each point we're going to re create an object that we'll be the lat the lng and the number of report
+    $.each(gpby, function( index, value ) {
+      //we split the index to get the lat and lng
+      ind = index.split("_");
+
+      var size = Object.size(value);
+
+      //Calcul la proportionalité
+      var numb = Math.sqrt(size)*Math.sqrt(max);
+
+      obj2 = {
+        lng : ind[0],
+        lat: ind[1],
+        count: Math.floor(numb)
+      };
+      // value/ largest value) x max. symbol size
+      console.log(obj2.count);
+      //var result = [+ind[1],+ind[0],String(value.length)];
+      reduce.push(obj2);
+    });
+
+
+
+
+    //Get the layer OSM cities and town
+    var features_cities_and_towns = "";
+    var features_villages ="";
+    features_villages = L.featureGroup(null);
+    features_cities_and_towns = L.featureGroup(null);
+
+    //CAll to the Overpass API
+    $.getJSON("http://overpass-api.de/api/interpreter?data=%5Bout%3Ajson%5D%3B%0A%28%0A%20%20node%5B%22place%22~%22city%7Ctown%7Cvillage%22%5D%2816.18038632955662%2C106.578369140625%2C17.456235599424733%2C107.83355712890625%29%3B%0A%29%3B%0Aout%20body%3B%0A%3E%3B%0Aout%20skel%20qt%3B", function(cities_result) {
+      cities_all = cities_result.elements;
+      features_cities = [];
+      features_vill = [];
+
+      $.each(cities_all, function( index, value ) {
+        //console.log(index, value);
+        var place = { id:index,lat:value.lat,lng:value.lon,name:value.tags.name,place:value.tags.place} ;
+
+        if(value.tags.place == "city"||value.tags.place=="town"){
+          //Create marker for cities and towns
+          var circle_city = L.circleMarker([value.lat, value.lon], { fillColor: "#fff", color:"#000",radius: 7 }).bindLabel(value.tags.name, { noHide: true });
+          features_cities.push(circle_city);
+        }
+        if(value.tags.place == "village"){
+          //Create marker for villages
+          var village = L.circleMarker([value.lat, value.lon],{ fillColor: "#fff", color:"#000",radius: 4 }).bindLabel(value.tags.name,{className:"textLabelclass",noHide: false ,direction:"right",offset:[3,-15]});
+          features_vill.push(village);
+        };
+
+      });
+
+      //features_cities_and_towns.push(features_cities);
+      map.removeLayer(features_cities_and_towns);
+      features_cities_and_towns = L.featureGroup(features_cities);
+      map.addLayer(features_cities_and_towns);
+
+      map.removeLayer(features_villages);
+      features_villages = L.featureGroup(features_vill);
+      map.addLayer(features_villages);
+
+      map.on('zoomend', function (e) {
+        myZoomHandler();
+      });
+
+      function myZoomHandler() {
+        var currentZoom = map.getZoom();
+        switch (currentZoom) {
+          case 12:
+          map.removeLayer(features_villages);
+          features_villages = L.featureGroup(features_vill);
+          console.log(features_villages);
+          _.each(features_villages, function(data){
+            _.each(data,function(vil){
+              //vil.setStyle({radius :'4'});
+              //vil.setStyle({stroke :true});
+              vil._labelNoHide=false;
+              vil._leaflet_events.mouseout[0].action = L.BaseMarkerMethods.hideLabel;
+            });
+          });
+          map.addLayer(features_villages);
+          break;
+          case 13:
+          map.removeLayer(features_villages);
+          features_villages = L.featureGroup(features_vill);
+
+          var layerdisab = $( "span:contains('Villages')").siblings().is(':checked');
+
+          _.each(features_villages, function(data){
+            _.each(data,function(vil){
+
+              vil.label.className ="textLabelclass";
+              vil._labelNoHide=true;
+              vil._leaflet_events.mouseout[0].action = L.BaseMarkerMethods.showLabel;
+            });
+          });
+
+          if(layerdisab === true){
+            map.addLayer(features_villages);
+          };
+          break;
+
+        }
+      }
+
+
+      $( "span:contains('Cities from OSM')").siblings().attr('checked','checked');
+      $( "span:contains('Villages from OSM')").siblings().attr('checked','checked');
+
+      $("span:contains('Villages')").siblings().click(function( event ) {
+        if (map.hasLayer(features_villages)) {
+          map.removeLayer(features_villages);
+        }
+        else{
+          map.addLayer(features_villages);
+        } ;
+      });
+
+      $("span:contains('Cities')").siblings().click(function( event ) {
+        if (map.hasLayer(features_cities_and_towns)) {
+          map.removeLayer(features_cities_and_towns);
+        }
+        else{
+          map.addLayer(features_cities_and_towns);
+        } ;
+      });
+
+
+    });
+
+    //config of the heatmap
+    var hotData = {
+      max: max,
+      data: reduce
+    };
+    var cfg = {
+      // radius should be small ONLY if scaleRadius is true (or small radius is intended)
+      // if scaleRadius is false it will be the constant radius used in pixels
+      "radius": 50,
+      "maxOpacity": 1,
+      // scales the radius based on map zoom
+      "scaleRadius": false,
+      // if set to false the heatmap uses the global maximum for colorization
+      // if activated: uses the data maximum within the current map boundaries
+      //   (there will always be a red spot with useLocalExtremas true)
+      "useLocalExtrema": false,
+      // which field name in your data represents the latitude - default "lat"
+      latField: 'lat',
+      // which field name in your data represents the longitude - default "lng"
+      lngField: 'lng',
+      // which field name in your data represents the data value - default "value"
+      valueField: 'count',
+      //gradient:{0.2:'#01ABE9',0.6:'#C3CED0',0.7: '#F54B1A'}
+      gradient:{0.25:'blue',0.5:'green',0.75:'yellow',1:'red'}
+    };
+
+
+    var heatmapLayer = new HeatmapOverlay(cfg);
+
+    //Tiles
+    var OpenStreetMap_HOT = L.tileLayer('http://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png', {
+      maxZoom: 19,
+      attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>, Tiles courtesy of <a href="http://hot.openstreetmap.org/" target="_blank">Humanitarian OpenStreetMap Team</a>'
+    });
+
+    var labels = L.tileLayer('http://{s}.tiles.mapbox.com/v4/mainfo.f3xwp14i/{z}/{x}/{y}.png?access_token=pk.eyJ1IjoibWFpbmZvIiwiYSI6ImRjMGNmMGE5ZjczYzc2NDU0MmFlNWQ3NThiYzRkYmRhIn0.Z9ZkL0wyzGyOyGMkcyFU1w');
+
+    var tiles = L.tileLayer('http://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+      attribution: 'Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community'
+    })
+
+    var districts = L.tileLayer('http://{s}.tiles.mapbox.com/v4/mainfo.7tz6ko6r/{z}/{x}/{y}.png?access_token=pk.eyJ1IjoibWFpbmZvIiwiYSI6ImRjMGNmMGE5ZjczYzc2NDU0MmFlNWQ3NThiYzRkYmRhIn0.Z9ZkL0wyzGyOyGMkcyFU1w');
+
+    var baseMaps = {
+      "ESRI Satellite": tiles,
+      "Humanitarian Open Street Map (OSM)":OpenStreetMap_HOT
+    };
+
+    var overlayMaps = {
+      "Heat map of the approuved reports": heatmapLayer,
+      "Districts boundaries" : districts,
+      "Cities from OSM": features_cities_and_towns,
+      "Villages from OSM":features_villages
+
+    };
+
+    //Restric to bounds
+    var southWest = L.latLng(16.531606,107.0103),
+    northEast = L.latLng(16.801204,107.51921),
+    bounds = L.latLngBounds(southWest, northEast);
+
+    var map = L.map('map',{maxZoom: 13,minZoom:12, maxBounds: bounds,layers: [tiles,features_cities_and_towns,features_villages,districts,heatmapLayer]}).setView([16.68, 107.25], 12);
+
+    heatmapLayer.setData(hotData);
+
+    L.control.layers(baseMaps, overlayMaps,{collapsed:false}).addTo(map);
+    var graphicScale = L.control.graphicScale({fill:'fill'}).addTo(map);
+
+    console.log(gpby);
+  });
+
+
+
+  </script>
+</body>
+</html>
