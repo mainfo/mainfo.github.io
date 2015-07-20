@@ -37,7 +37,6 @@ sudo mkdir publicmap
 sudo chown cartong publicmap
 ```
 Create a folder map
-
 ```
 cd publicmap
 sudo mkdir map
@@ -70,13 +69,49 @@ Yeah :)
 
 ## The heatmap
 
-FYI The Overpass Api query in Overpass Turbo
+For Vietnam we are using an Overpass API query to show all the villages.. Even the ones that are not displayed in OSM hot
+Ukraine however doesn't need anymore villages label.. Everything is mapped there.
+
+Install GIT
 ```
-[out:json];
-(
-  node["place"~"city|town|village"]({{bbox}});
-);
-out body;
->;
-out skel qt;
+sudo apt-get update
+sudo apt-get install git
 ```
+Configure git
+```
+git config --global user.email "mainfo.cartong@gmail.com"
+git config --global user.name "mainfo"
+```
+Go to the apache repo
+```
+cd /var/www/publicmap
+```
+clone the mainfo github repo
+```
+git clone https://github.com/mainfo/mainfo.github.io.git
+```
+remove the folder map
+```
+rm -r map/
+```
+rename the folder mainfo.github.io to map
+```
+mv mainfo.github.io map
+```
+Go in the folder
+```
+cd map
+```
+Remove index.html and index_vietnam.html
+```
+rm index.html
+rm index_vietnam.html
+```
+Rename index_ukraine.html as index.html
+```
+mv index_ukraine.html index.html
+```
+Run the python script to get the data
+```
+cd /home/cartong/mapps
+python usha_get_loc.py
