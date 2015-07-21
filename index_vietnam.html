@@ -26,11 +26,13 @@
     position: absolute;
     padding: 6px 8px;
     font: 14px/16px Arial, Helvetica, sans-serif;
-    color: #223;
-    background-color: rgba(255, 255, 255, 0.8);
-    box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+    font: 14px/16px Arial, Helvetica, sans-serif;
+    font-weight: 500;
+    text-shadow: 0 0 0.1em black, 0 0 0.1em black,
+    0 0 0.1em black,0 0 0.1em black,0 0 0.1em;
+    color: #fff;
     z-index:2000;
-    right: 0px;
+    right: 15px;
     bottom: 30px;
   }
   .labelvillages
@@ -55,6 +57,20 @@
     border-color: transparent;
     z-index:5;
   }
+  .legend-title{
+    position: absolute;
+    padding: 6px 15px;
+    font: 14px/16px Arial, Helvetica, sans-serif;
+    font-weight: 500;
+    text-shadow: 0 0 0.1em black, 0 0 0.1em black,
+    0 0 0.1em black,0 0 0.1em black,0 0 0.1em;
+    color: #fff;
+    right: 15px;
+    bottom: 90px;
+    height:20px;
+    width: 150px;
+    z-index:2000;
+  }
   .legend{
     position: absolute;
     padding: 6px 8px;
@@ -63,18 +79,42 @@
     background-color: rgba(255, 255, 255, 0.8);
     box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
     z-index:2000;
-    right: 0px;
-    bottom: 70px;
+    right: 15px;
+    bottom: 60px;
     height:20px;
     width: 150px;
-    background: linear-gradient(to right, blue 0%, green 33%, yellow 66%,red 100%);
+    background: linear-gradient(to right, blue 0%, green 50%, yellow 75%,red 100%);
   }
+  #min{
+    position: absolute;
+    left:5%;
+  }
+  #max{
+    position: absolute;
+    right:5%;
+  }
+  #quart{
+    position: absolute;
+    left:25%;
+  }
+  #quart2{
+    position: absolute;
+    left:50%;
+  }
+
   </style>
 </head>
 <body>
 
-  <!--<div class="legend"></div>-->
-  <div class="update"></div>
+    <div class="legend-title">Number of reports:</div>
+    <div class="legend">
+      <div id ="min" class="textLabelclass"></div>
+      <div id ="quart" class="textLabelclass"></div>
+      <div id ="quart2" class="textLabelclass"></div>
+      <div id ="max" class="textLabelclass"></div>
+    </div>
+    <div class="update"></div>
+
   <div id="map"></div>
 
 
@@ -91,6 +131,8 @@
   <script src="src/FeatureGroup.Label.js"></script>
   <script src="src/panel.js"></script>
   <script src="src/scale.js"></script>
+  <script src="src/datalib.js"></script>
+
 
 
   <script>
@@ -98,11 +140,11 @@
   //First thing call the data that are update every hour
 
   // On the server will be data.json
-  $.getJSON("data.json", function(data) {
+  $.getJSON("http://raw.githubusercontent.com/mainfo/data/master/data.json", function(data) {
 
     //Get the value of the last update.
     var last_update = data.last_update;
-    $(".update").html("Last update of the map: " + last_update);
+    $(".update").html("Last update: " + last_update);
 
     //Get all the coodinates in one object from the json
     var lsp = [];
@@ -157,7 +199,16 @@
 
     //And max is the variable equal to the max number of report for each point in the total of combinaison lat_lng
     var max = maxreport.max();
-    console.log(max);
+    var min = maxreport.min();
+    var sum = dl.sum(maxreport);
+    var firstquart = Math.pow((max*25/100),2)/max;
+    var secondquart= Math.pow((max*50/100),2)/max;
+
+    console.log(firstquart);
+    $("#max").text(max);
+    $("#min").text(min);
+    $("#quart").text(firstquart.toFixed(0));
+    $("#quart2").text(secondquart.toFixed(0));
 
     // For each point we're going to re create an object that we'll be the lat the lng and the number of report
     $.each(gpby, function( index, value ) {
@@ -172,15 +223,14 @@
       obj2 = {
         lng : ind[0],
         lat: ind[1],
-        count: Math.floor(numb)
+        count: Math.floor(numb),
+        countreports : size
       };
       // value/ largest value) x max. symbol size
-      console.log(obj2.count);
+      //console.log(obj2.count);
       //var result = [+ind[1],+ind[0],String(value.length)];
       reduce.push(obj2);
     });
-
-
 
 
     //Get the layer OSM cities and town
@@ -250,7 +300,6 @@
 
           _.each(features_villages, function(data){
             _.each(data,function(vil){
-
               vil.label.className ="textLabelclass";
               vil._labelNoHide=true;
               vil._leaflet_events.mouseout[0].action = L.BaseMarkerMethods.showLabel;
@@ -290,7 +339,25 @@
 
     });
 
+    var report_label=[];
+    _.each(reduce,function(d){
+      var countreport = L.circleMarker([d.lat, d.lng], { fillColor: "#fff", color:"#000",radius: 7 }).bindLabel(String(d.countreports), { className:"textLabelclass",noHide: true, offset:[-15,-15] });
+      report_label.push(countreport);
+    });
+    report_label_layer = L.featureGroup(report_label);
+
+    _.each(report_label_layer, function(data){
+      _.each(data,function(vil){
+        vil.setStyle({radius :'0'});
+        vil.setStyle({stroke :false});
+        // /.style.fontSize="20";
+        //vil._labelNoHide=false;
+        //vil._leaflet_events.mouseout[0].action = L.BaseMarkerMethods.hideLabel;
+      });
+    });
+
     //config of the heatmap
+
     var hotData = {
       max: max,
       data: reduce
@@ -339,11 +406,11 @@
     };
 
     var overlayMaps = {
-      "Heat map of the approuved reports": heatmapLayer,
+      "Heat map of the approved reports": heatmapLayer,
       "Districts boundaries" : districts,
       "Cities from OSM": features_cities_and_towns,
-      "Villages from OSM":features_villages
-
+      "Villages from OSM":features_villages,
+      "Number of reports":report_label_layer
     };
 
     //Restric to bounds
@@ -358,7 +425,6 @@
     L.control.layers(baseMaps, overlayMaps,{collapsed:false}).addTo(map);
     var graphicScale = L.control.graphicScale({fill:'fill'}).addTo(map);
 
-    console.log(gpby);
   });
 
 

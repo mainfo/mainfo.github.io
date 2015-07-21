@@ -63,17 +63,28 @@
     background-color: rgba(255, 255, 255, 0.8);
     box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
     z-index:2000;
-    right: 0px;
+    right: 20px;
     bottom: 70px;
     height:20px;
     width: 150px;
     background: linear-gradient(to right, blue 0%, green 33%, yellow 66%,red 100%);
   }
+  #min{
+    position: absolute;
+    left:5%;
+  }
+  #max{
+    position: absolute;
+    right:5%;
+  }
   </style>
 </head>
 <body>
 
-  <!--<div class="legend"></div>-->
+  <div class="legend">
+    <div id ="min" class="textLabelclass"></div>
+    <div id ="max" class="textLabelclass"></div>
+  </div>
   <div class="update"></div>
   <div id="map"></div>
 
@@ -157,7 +168,10 @@
 
     //And max is the variable equal to the max number of report for each point in the total of combinaison lat_lng
     var max = maxreport.max();
+    var min = maxreport.min();
     console.log(max);
+    $("#max").text(max);
+    $("#min").text(min);
 
     // For each point we're going to re create an object that we'll be the lat the lng and the number of report
     $.each(gpby, function( index, value ) {
@@ -172,7 +186,8 @@
       obj2 = {
         lng : ind[0],
         lat: ind[1],
-        count: Math.floor(numb)
+        count: Math.floor(numb),
+        inforeport:size
       };
       // value/ largest value) x max. symbol size
       console.log(obj2.count);
@@ -295,6 +310,20 @@
       max: max,
       data: reduce
     };
+
+    var report_label=[];
+    _.each(reduce,function(d){
+      console.log(d.lng);
+      console.log(d.lat);
+      console.log(d.count);
+      var countreport = L.circleMarker([d.lat, d.lng], { fillColor: "#fff", color:"#000",radius: 7 }).bindLabel(String(d.count), { className:"textLabelclass",noHide: true, offset:[-12,-15] });
+      report_label.push(countreport);
+    });
+    console.log(report_label);
+
+    report_label_layer = L.featureGroup(report_label);
+    //map.addLayer(report_label_layer);
+
     var cfg = {
       // radius should be small ONLY if scaleRadius is true (or small radius is intended)
       // if scaleRadius is false it will be the constant radius used in pixels
@@ -339,8 +368,8 @@
     };
 
     var overlayMaps = {
-      "Heat map of the approuved reports": heatmapLayer
-      //"Districts boundaries" : districts
+      "Heat map of the approved reports": heatmapLayer,
+      "Heat map report count" : report_label_layer
       //"Cities from OSM": features_cities_and_towns,
       //"Villages from OSM":features_villages
 
@@ -352,7 +381,7 @@
     bounds = L.latLngBounds(southWest, northEast);
 
     //var map = L.map('map',{maxZoom: 13,minZoom:10, maxBounds: bounds,layers: [tiles,features_cities_and_towns,features_villages,districts,heatmapLayer]}).setView([48.374497,38.699341], 10);
-    var map = L.map('map',{maxZoom: 13,minZoom:1, layers: [OpenStreetMap_HOT,heatmapLayer]}).setView([48.374497,38.699341], 9);
+    var map = L.map('map',{maxZoom: 13,minZoom:1, layers: [OpenStreetMap_HOT,heatmapLayer,report_label_layer]}).setView([48.374497,38.699341], 9);
 
 
     heatmapLayer.setData(hotData);
@@ -360,7 +389,7 @@
     L.control.layers(baseMaps, overlayMaps,{collapsed:false}).addTo(map);
     var graphicScale = L.control.graphicScale({fill:'fill'}).addTo(map);
 
-    console.log(gpby);
+    console.log(reduce);
   });
 
 
