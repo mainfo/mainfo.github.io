@@ -57,6 +57,15 @@
     border-color: transparent;
     z-index:5;
   }
+  .reportLabelclass{
+    white-space:nowrap;
+    font-weight: 1200;
+    font-size: 16;
+    color: #fff;
+    background-color: transparent;
+    border-color: transparent;
+    z-index:5;
+  }
   .legend-title{
     position: absolute;
     padding: 6px 15px;
@@ -66,7 +75,7 @@
     0 0 0.1em black,0 0 0.1em black,0 0 0.1em;
     color: #fff;
     right: 15px;
-    bottom: 90px;
+    bottom: 80px;
     height:20px;
     width: 150px;
     z-index:2000;
@@ -81,7 +90,7 @@
     z-index:2000;
     right: 15px;
     bottom: 60px;
-    height:20px;
+    height:15px;
     width: 150px;
     background: linear-gradient(to right, blue 0%, green 50%, yellow 75%,red 100%);
   }
@@ -108,10 +117,10 @@
 
     <div class="legend-title">Number of reports:</div>
     <div class="legend">
-      <div id ="min" class="textLabelclass"></div>
-      <div id ="quart" class="textLabelclass"></div>
-      <div id ="quart2" class="textLabelclass"></div>
-      <div id ="max" class="textLabelclass"></div>
+      <div id ="min" class="reportLabelclass"></div>
+      <div id ="quart" class="reportLabelclass"></div>
+      <div id ="quart2" class="reportLabelclass"></div>
+      <div id ="max" class="reportLabelclass"></div>
     </div>
     <div class="update"></div>
 
@@ -341,7 +350,7 @@
 
     var report_label=[];
     _.each(reduce,function(d){
-      var countreport = L.circleMarker([d.lat, d.lng], { fillColor: "#fff", color:"#000",radius: 7 }).bindLabel(String(d.countreports), { className:"textLabelclass",noHide: true, offset:[-15,-15] });
+      var countreport = L.circleMarker([d.lat, d.lng], { fillColor: "#fff", color:"#000",radius: 7 }).bindLabel(String(d.countreports), { className:"reportLabelclass",noHide: true, offset:[-15,-15] });
       report_label.push(countreport);
     });
     report_label_layer = L.featureGroup(report_label);
