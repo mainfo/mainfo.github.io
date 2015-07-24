@@ -139,7 +139,7 @@
   <script src="src/FeatureGroup.Label.js"></script>
   <script src="src/panel.js"></script>
   <script src="src/scale.js"></script>
-  <script src="src/datalib.js"></script>
+  <!--<script src="src/datalib.js"></script>-->
 
 
 
@@ -208,7 +208,7 @@
     //And max is the variable equal to the max number of report for each point in the total of combinaison lat_lng
     var max = maxreport.max();
     var min = maxreport.min();
-    var sum = dl.sum(maxreport);
+    //var sum = dl.sum(maxreport);
     var firstquart = Math.pow((max*25/100),2)/max;
     var secondquart= Math.pow((max*50/100),2)/max;
 
@@ -347,22 +347,23 @@
 
     });
 
-    var report_label=[];
-    _.each(reduce,function(d){
-      var countreport = L.circleMarker([d.lat, d.lng], { fillColor: "#fff", color:"#000",radius: 7 }).bindLabel(String(d.countreports), { className:"reportLabelclass",noHide: true, offset:[-15,-15] });
-      report_label.push(countreport);
-    });
-    report_label_layer = L.featureGroup(report_label);
-
-    _.each(report_label_layer, function(data){
-      _.each(data,function(vil){
-        vil.setStyle({radius :'0'});
-        vil.setStyle({stroke :false});
-        // /.style.fontSize="20";
-        //vil._labelNoHide=false;
-        //vil._leaflet_events.mouseout[0].action = L.BaseMarkerMethods.hideLabel;
-      });
-    });
+    // var report_label=[];
+    // _.each(reduce,function(d){
+    //   var countreport = L.circleMarker([d.lat, d.lng], { fillColor: "#fff", color:"#000",radius: 7 }).bindLabel(String(d.countreports), { className:"reportLabelclass",noHide: true, offset:[-15,-15] });
+    //   report_label.push(countreport);
+    // });
+    //
+    // report_label_layer = L.featureGroup(report_label);
+    //
+    // _.each(report_label_layer, function(data){
+    //   _.each(data,function(vil){
+    //     vil.setStyle({radius :'0'});
+    //     vil.setStyle({stroke :false});
+    //     // /.style.fontSize="20";
+    //     //vil._labelNoHide=false;
+    //     //vil._leaflet_events.mouseout[0].action = L.BaseMarkerMethods.hideLabel;
+    //   });
+    // });
 
     //config of the heatmap
 
@@ -417,8 +418,8 @@
       "Heat map of the approved reports": heatmapLayer,
       "Districts boundaries" : districts,
       "Cities from OSM": features_cities_and_towns,
-      "Villages from OSM":features_villages,
-      "Number of reports":report_label_layer
+      "Villages from OSM":features_villages
+      //"Number of reports":report_label_layer
     };
 
     //Restric to bounds
