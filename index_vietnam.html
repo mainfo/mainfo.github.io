@@ -148,7 +148,7 @@
   //First thing call the data that are update every hour
 
   // On the server will be data.json
-  $.getJSON("https://raw.githubusercontent.com/mainfo/data/master/data.json", function(data) {
+  $.getJSON("data.json", function(data) {
 
     //Get the value of the last update.
     var last_update = data.last_update;
