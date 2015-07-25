@@ -67,14 +67,14 @@
   }
   .legend-title{
     position: absolute;
-    padding: 6px 15px;
+    padding: 6px 3px;
     font: 14px/16px Arial, Helvetica, sans-serif;
     font-weight: 500;
     text-shadow: 0 0 0.1em black, 0 0 0.1em black,
     0 0 0.1em black,0 0 0.1em black,0 0 0.1em;
     color: #fff;
-    right: 15px;
-    bottom: 80px;
+    left: 15px;
+    bottom: 60px;
     height:20px;
     width: 150px;
     z-index:2000;
@@ -87,8 +87,8 @@
     background-color: rgba(255, 255, 255, 0.8);
     box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
     z-index:2000;
-    right: 15px;
-    bottom: 60px;
+    left: 15px;
+    bottom: 40px;
     height:15px;
     width: 150px;
     background: linear-gradient(to right, blue 0%, green 50%, yellow 75%,red 100%);
@@ -114,14 +114,13 @@
 </head>
 <body>
 
-    <div class="legend-title">Number of reports:</div>
-    <div class="legend">
-      <div id ="min" class="reportLabelclass"></div>
-      <div id ="quart" class="reportLabelclass"></div>
-      <div id ="quart2" class="reportLabelclass"></div>
-      <div id ="max" class="reportLabelclass"></div>
-    </div>
-    <div class="update"></div>
+  <div class="legend-title">Number of reports:</div>
+  <div class="legend">
+    <div id ="min" class="reportLabelclass"></div>
+    <div id ="quart" class="reportLabelclass"></div>
+    <div id ="quart2" class="reportLabelclass"></div>
+    <div id ="max" class="reportLabelclass"></div>
+  </div>
 
   <div id="map"></div>
 
@@ -150,9 +149,6 @@
   // On the server will be data.json
   $.getJSON("data.json", function(data) {
 
-    //Get the value of the last update.
-    var last_update = data.last_update;
-    $(".update").html("Last data update: " + last_update);
 
     //Get all the coodinates in one object from the json
     var lsp = [];
@@ -181,11 +177,11 @@
 
     //Most precious function of the world that will count the number of array inside an object. = number of report per combinaison lat_lng
     Object.size = function(obj) {
-        var size = 0, key;
-        for (key in obj) {
-            if (obj.hasOwnProperty(key)) size++;
-        }
-        return size;
+      var size = 0, key;
+      for (key in obj) {
+        if (obj.hasOwnProperty(key)) size++;
+      }
+      return size;
     };
 
     //maxreport will store the array of conbinaison lat_lng
@@ -284,27 +280,29 @@
       });
 
       function myZoomHandler() {
+        var layerdisab = $( "span:contains('Villages')").siblings().is(':checked');
         var currentZoom = map.getZoom();
         switch (currentZoom) {
           case 12:
-          map.removeLayer(features_villages);
-          features_villages = L.featureGroup(features_vill);
-          console.log(features_villages);
-          _.each(features_villages, function(data){
-            _.each(data,function(vil){
-              //vil.setStyle({radius :'4'});
-              //vil.setStyle({stroke :true});
-              vil._labelNoHide=false;
-              vil._leaflet_events.mouseout[0].action = L.BaseMarkerMethods.hideLabel;
+            map.removeLayer(features_villages);
+            features_villages = L.featureGroup(features_vill);
+            _.each(features_villages, function(data){
+              _.each(data,function(vil){
+                //vil.setStyle({radius :'4'});
+                //vil.setStyle({stroke :true});
+                vil._labelNoHide=false;
+                vil._leaflet_events.mouseout[0].action = L.BaseMarkerMethods.hideLabel;
+              });
             });
-          });
-          map.addLayer(features_villages);
+          if(layerdisab === true){
+            map.addLayer(features_villages);
+          };
           break;
           case 13:
           map.removeLayer(features_villages);
           features_villages = L.featureGroup(features_vill);
 
-          var layerdisab = $( "span:contains('Villages')").siblings().is(':checked');
+
 
           _.each(features_villages, function(data){
             _.each(data,function(vil){
@@ -432,7 +430,8 @@
     heatmapLayer.setData(hotData);
 
     L.control.layers(baseMaps, overlayMaps,{collapsed:false}).addTo(map);
-    var graphicScale = L.control.graphicScale({fill:'fill'}).addTo(map);
+
+    var graphicScale = L.control.graphicScale({fill:'fill',position:'bottomright'}).addTo(map);
 
   });
 
