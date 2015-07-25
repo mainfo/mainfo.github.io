@@ -2,10 +2,9 @@
 
 ## Export the blurry coordinates to a geojson
 
-###with Python -- Update every hour
+#### The Python that connect to the usha DB, round the coordinates to 2 digits and create a geojson
 
 Use SSH to connect to the server
-
 In the cartong folder and that where we're going to build our repo
 
 ```
@@ -13,7 +12,6 @@ mkdir mapps
 cd mapps
 ```
 Important step first !
-
 Install the python mysql librairy :
 
 ```
@@ -33,7 +31,7 @@ Create the python file
 touch usha_get_loc.py
 
 ```
-Enter the file and copy paste the script usha_get_loc.py that should be in this github repo
+Open the file and copy paste the script usha_get_loc.py that should be in this github repo
 
 ```
 nano usha_get_loc.py
@@ -41,6 +39,8 @@ nano usha_get_loc.py
 
 Paste, replace the missing connexion strings by yours.
 CTRL X / yes and Enter to save
+
+#### Create the folder where the heatmap will be and where we'll push the geojson
 
 Create the publicmap repo
 ```
