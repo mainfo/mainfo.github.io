@@ -2,11 +2,18 @@
 
 ## Export the blurry coordinates to a geojson
 
-Connect to the server in SSH
+###with Python -- Update every hour
+
+Use SSH to connect to the server
+
+In the cartong folder and that where we're going to build our repo
+
 ```
 mkdir mapps
 cd mapps
 ```
+Important step first !
+
 Install the python mysql librairy :
 
 ```
@@ -14,19 +21,24 @@ sudo apt-get install libmysqlclient-dev
 sudo apt-get install python-mysqldb
 ```
 
-Create the data folder
+Create the data folder that will store: the data...
+
 ```
 mkdir data
 ```
 
 Create the python file
+
 ```
 touch usha_get_loc.py
+
 ```
-Enter the file and copy paste the script usha_get_loc.py that is in this repo
+Enter the file and copy paste the script usha_get_loc.py that should be in this github repo
+
 ```
 nano usha_get_loc.py
 ```
+
 Paste, replace the missing connexion strings by yours.
 CTRL X / yes and Enter to save
 
