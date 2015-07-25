@@ -1,8 +1,8 @@
 # mine info
 
-## Export the blurry coordinates to a geojson
 
-#### The Python that connect to the usha DB, round the coordinates to 2 digits and create a geojson
+
+#### A Python script that will connect to the ushahidi DB, round the coordinates to only 2 digits and create a geojson
 
 Use SSH to connect to the server
 In the cartong folder and that where we're going to build our repo
@@ -40,33 +40,47 @@ nano usha_get_loc.py
 Paste, replace the missing connexion strings by yours.
 CTRL X / yes and Enter to save
 
-#### Create the folder where the heatmap will be and where we'll push the geojson
+
+
+
+#### Create the folder where the heatmap will be and where we will push the geojson
 
 Create the publicmap repo
+
 ```
 cd /var/www/
 sudo mkdir publicmap
 sudo chown cartong publicmap
 ```
-Create a folder map
+
+In it, create a folder map
+
 ```
 cd publicmap
 sudo mkdir map
 sudo chown cartong map
 ```
+
 Go back to the mapps folder
+
 ```
 cd /home/cartong/mapps/
 ```
+
 And run the script
+
 ```
 python usha_get_loc.py
 ```
+
 And it should have created a data.json file in the data folder and in the /var/www/publicmap/map/ folder
 
 Yeah :)
 
-## Run the script every hour
+
+
+
+#### Run the script every hour
 
 ```
 crontab -e
@@ -79,10 +93,10 @@ It will run the script every first minute of every hour and it will create a log
 
 Yeah :)
 
-## The heatmap
 
-For Vietnam we are using an Overpass API query to show all the villages.. Even the ones that are not displayed in OSM.
-Ukraine doesn't need anymore villages label.. Everything is mapped there.
+
+#### The heatmap
+
 
 Install GIT
 ```
