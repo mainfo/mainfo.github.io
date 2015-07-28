@@ -8,7 +8,7 @@ if (!in_array($action, $actions)) { die("Bad action: $action"); }
 
 error_reporting(-1); // report all errors
 
-$ushahidi_config_db = "/var/www/vhosts/mainfo.cartong.org/httpdocs/application/config/database.php";
+$ushahidi_config_db = "/var/www/ushahidi/application/database.php";
 
 define('SYSPATH', "dummy");
 unset($config);
