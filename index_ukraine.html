@@ -76,6 +76,7 @@
     if (firstquart < 1){firstquart = 1 };
     if (secondquart < 1){secondquart = 1 };
     if (lastquart < 1){lastquart = 1 };
+
     var reportsCounted = groupToCountPoints._wrapped.map(function(rep) {
 
       return reportObj = {
@@ -166,8 +167,8 @@
     //console.log(tin2);
 
     var overlayMaps = {
-      "Heat map of the approved reports": heatmapLayer,
-      "Heat map report count" : report_label_layer
+      "Heat map of the approved reports": heatmapLayer
+      //"Heat map report count" : report_label_layer
       //"Tin":tin_
 
     };
@@ -178,7 +179,7 @@
     bounds = L.latLngBounds(southWest, northEast);
 
     //var map = L.map('map',{maxZoom: 13,minZoom:10, maxBounds: bounds,layers: [tiles,features_cities_and_towns,features_villages,districts,heatmapLayer]}).setView([48.374497,38.699341], 10);
-    var map = L.map('map',{maxZoom: 13,minZoom:1, layers: [OpenStreetMap_HOT,heatmapLayer,report_label_layer]}).setView([48.374497,38.699341], 9);
+    var map = L.map('map',{maxZoom: 13,minZoom:1, layers: [OpenStreetMap_HOT,heatmapLayer]}).setView([48.374497,38.699341], 9);
 
 
 
