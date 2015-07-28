@@ -8,7 +8,7 @@ if (!in_array($action, $actions)) { die("Bad action: $action"); }
 
 error_reporting(-1); // report all errors
 
-$ushahidi_config_db = "/var/www/ushahidi/application/config/database.php";
+$ushahidi_config_db = "../../ushahidi/application/config/database.php";
 
 define('SYSPATH', "dummy");
 unset($config);
@@ -24,12 +24,20 @@ if ($mysqli->connect_errno) {
     die("Failed to connect to MySQL: (" . $mysqli->connect_errno . ") " . $mysqli->connect_error);
 }
 
-$result = $mysqli->query("SELECT t1.incident_dateadd, t2.latitude , t2.longitude FROM incident AS t1 INNER JOIN location AS t2 ON t1.location_id = t2.id WHERE t1.incident_active = 1");
-printf('{ "type": "FeatureCollection","features":');
+$result = $mysqli->query("SELECT t1.incident_dateadd, t2.latitude , t2.longitude FROM incident AS t1 INNER JOIN location AS t2 ON t1.location_id =$
+printf('{ "type": "FeatureCollection","features":[');
+
 $array = array();
 while ($row = $result->fetch_assoc()) {
-
-  $onefeature = '{/"type": "Feature", "properties":{"incident_dateadd":)';
-					{"type": "Feature", "properties":{"incident_dateadd":"'.$row["incident_dateadd"].'"}, "geometry": { "type": "Point", "coordinates": ['.$row["longitude"].','.$row["logitude"].']}}
+  $onefeature = '{"type": "Feature", "properties":{"incident_dateadd":"'.$row["incident_dateadd"].'"}, "geometry": { "type": "Point", "coordinates$
   $array[]= $onefeature;
 }
+$allfeat = "";
+foreach ($array as $arr) {
+$allfeat .= $arr;
+    //echo $arr;
+
+};
+$trimed =rtrim($allfeat,",");
+print($trimed);
+echo "]}";
