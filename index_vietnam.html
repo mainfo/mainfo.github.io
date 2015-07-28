@@ -148,35 +148,25 @@
         var currentZoom = map.getZoom();
 
         switch (currentZoom) {
-          case 12:
-          map.removeLayer(villages);
-          villages = L.featureGroup(features_villages);
-          _.each(villages, function(data){
-            _.each(data,function(vil){
-              vil._labelNoHide=false;
-              vil._leaflet_events.mouseout[0].action = L.BaseMarkerMethods.hideLabel;
-            });
-          });
-          if(layerchecked === true){
-            map.addLayer(villages);
-          };
-          break;
 
           case 13:
-          map.removeLayer(villages);
+          villages = L.featureGroup(features_villages);
+          _.each(villages, function(val){
+             _.each(val,function(vilo){
+               vilo.setLabelNoHide(true);
+             });
+          });
+          break;
+          case 12:
           villages = L.featureGroup(features_villages);
           _.each(villages, function(data){
             _.each(data,function(vil){
-              vil.label.className ="textLabelclass";
-              vil._labelNoHide=true;
-              vil._leaflet_events.mouseout[0].action = L.BaseMarkerMethods.showLabel;
+              vil.setLabelNoHide(false);
+              console.log(vil);
             });
           });
-          if(layerchecked === true){
-            map.addLayer(villages);
-          };
-          break;
 
+          break;
         }
       };
 
