@@ -70,7 +70,10 @@
     var firstquart = (Math.pow((maxreport*25/100),2)/maxreport).toFixed(0);
     var secondquart= (Math.pow((maxreport*50/100),2)/maxreport).toFixed(0);
     var lastquart = (Math.pow((maxreport*75/100),2)/maxreport).toFixed(0);
-
+    if (minreport < 1){minreport = 1 };
+    if (firstquart < 1){firstquart = 1 };
+    if (secondquart < 1){secondquart = 1 };
+    if (lastquart < 1){lastquart = 1 };
     var reportsCounted = groupToCountPoints._wrapped.map(function(rep) {
 
       return reportObj = {
