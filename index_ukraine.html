@@ -4,7 +4,7 @@
   <title>Mapps</title>
   <meta http-equiv="Content-Language" content="fr" />
   <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
-  <link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.css" />
+  <link rel="stylesheet" href="css/leaflet.css" />
   <link rel="stylesheet" href="css/map.css" />
   <link rel="stylesheet" href="css/label.css"/>
   <link rel="stylesheet" href="dist/scale.css"/>
@@ -73,9 +73,9 @@
     var lastquart = (Math.pow((maxreport*75/100),2)/maxreport).toFixed(0);
 
     if (minreport < 1){minreport = 1 };
-    if (firstquart < 1){firstquart = 1 };
-    if (secondquart < 1){secondquart = 1 };
-    if (lastquart < 1){lastquart = 1 };
+    if (firstquart <= 1){firstquart = "" };
+    if (secondquart <= 1){secondquart = "" };
+    if (lastquart <= 1){lastquart = "" };
 
     var reportsCounted = groupToCountPoints._wrapped.map(function(rep) {
 
