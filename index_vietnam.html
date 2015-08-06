@@ -147,7 +147,7 @@
 
       function myZoomHandler() {
 
-        var layerchecked = $( "span:contains('Villages')").siblings().is(':checked');
+        var layerchecked = $( "span:contains('Villages'),span:contains('làng')").siblings().is(':checked');
         var currentZoom = map.getZoom();
 
         switch (currentZoom) {
@@ -184,10 +184,10 @@
       };
 
       //UI stuff
-      $( "span:contains('Cities from OSM')").siblings().attr('checked','checked');
-      $( "span:contains('Villages from OSM')").siblings().attr('checked','checked');
+      $( "span:contains('Cities from OSM'),span:contains('thành')").siblings().attr('checked','checked');
+      $( "span:contains('Villages from OSM'),span:contains('làng')").siblings().attr('checked','checked');
 
-      $("span:contains('Villages')").siblings().click(function( event ) {
+      $("span:contains('Villages'),span:contains('làng')").siblings().click(function( event ) {
         if (map.hasLayer(villages)) {
           map.removeLayer(villages);
         }
@@ -196,7 +196,7 @@
         } ;
       });
 
-      $("span:contains('Cities')").siblings().click(function( event ) {
+      $("span:contains('Cities'),span:contains('thành')").siblings().click(function( event ) {
         if (map.hasLayer(cities_and_towns)) {
           map.removeLayer(cities_and_towns);
         }
@@ -264,8 +264,31 @@
     $('.leaflet-control-layers').append('<div class ="legend_gradient"></div>').append(chainereports);
 
 
+    $( ".leaflet-control-layers" ).prepend( $("<div style='margin-bottom:10px;margin-top:10px'><a class='vietnamese'style='color:#FFDC00'>Vietnamese</a> | <a class='english'style='color:#FF4136'>English</a> </div>" ) );
+
   });//Get JSON
 
+
+  </script>
+  <script>
+  $( document ).ready(function() {
+    $(".vietnamese").click(function(){
+      $("span:contains('Cities')").text(" thành phố")
+      $("span:contains('Villages from OSM')").text(" làng")
+      $("span:contains('Districts')").text(" huyện biên giới")
+      $("span:contains('Heat')").text(" Bản đồ nhiệt của các báo cáo đã")
+      $("span:contains('ESRI')").text(" ESRI vệ tinh")
+      $("span:contains('Humanitarian')").text(" nhân đạo OSM")
+    });
+    $(".english").click(function(){
+      $("span:contains('thành')").text(" Cities from OSM")
+      $("span:contains('làng')").text(" Villages from OSM")
+      $("span:contains('huyện')").text(" District boundaries")
+      $("span:contains('Bản')").text(" Heat map of the approved reports")
+      $("span:contains('tinh')").text(" ESRI Satellite")
+      $("span:contains('nhân')").text(" Humanitarian Open Street Map (OSM)")
+    });
+  });
   </script>
 </body>
 </html>
