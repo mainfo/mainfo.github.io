@@ -34,6 +34,7 @@
   <script src="src/underscore.js"></script>
   <script src="src/jquery.js"></script>
   <script src="src/leaflet.js"></script>
+  <script src="http://d3js.org/topojson.v1.min.js"></script>
   <script src="http://api.tiles.mapbox.com/mapbox.js/plugins/turf/v2.0.0/turf.min.js"></script>
   <script src="src/HeatLayer.js"></script>
   <script src="src/heatmap2.js"></script>
@@ -164,6 +165,29 @@
 
     var tin_ = L.geoJson(centroidPt,{"color": "#ff7800","weight": 1.5,"opacity": 0.65});
 
+    L.TopoJSON = L.GeoJSON.extend({
+      addData: function(jsonData) {
+        if (jsonData.type === "Topology") {
+          for (key in jsonData.objects) {
+            geojson = topojson.feature(jsonData, jsonData.objects[key]);
+            L.GeoJSON.prototype.addData.call(this, geojson);
+          }
+        }
+        else {
+          L.GeoJSON.prototype.addData.call(this, jsonData);
+        }
+      }
+    });
+    var topoLayer = new L.TopoJSON();
+
+    $.getJSON('data/UA_a_adm1_unk_gua_0/ukr1.json')
+      .done(addTopoData);
+
+    function addTopoData(topoData){
+      topoLayer.addData(topoData);
+      topoLayer.addTo(map);
+    }
+    
     //console.log(tin2);
 
     var overlayMaps = {
