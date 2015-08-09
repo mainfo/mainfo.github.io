@@ -262,31 +262,28 @@
     chainereports = '<div id ="min" class="reportLabelclass">'+minreport+'</div><div id ="quart" class="reportLabelclass">'+firstquart+'</div><div id ="quart2" class="reportLabelclass">'+secondquart+'</div><div id ="lastquart" class="reportLabelclass">'+lastquart+'</div><div id ="max" class="reportLabelclass">'+maxreport+'</div>';
 
     $('.leaflet-control-layers').append('<div class ="legend_gradient"></div>').append(chainereports);
-
-
     $( ".leaflet-control-layers" ).prepend( $("<div style='margin-bottom:10px;margin-top:10px'><a class='vietnamese'style='color:#FFDC00'>Vietnamese</a> | <a class='english'style='color:#FF4136'>English</a> </div>" ) );
 
+    $( document ).ready(function() {
+      $(".vietnamese").click(function(){
+        $("span:contains('Cities')").text(" thành phố")
+        $("span:contains('Villages from OSM')").text(" làng")
+        $("span:contains('Districts')").text(" huyện biên giới")
+        $("span:contains('Heat')").text(" Bản đồ nhiệt của các báo cáo đã")
+        $("span:contains('ESRI')").text(" ESRI vệ tinh")
+        $("span:contains('Humanitarian')").text(" nhân đạo OSM")
+      });
+      $(".english").click(function(){
+        $("span:contains('thành')").text(" Cities from OSM")
+        $("span:contains('làng')").text(" Villages from OSM")
+        $("span:contains('huyện')").text(" District boundaries")
+        $("span:contains('Bản')").text(" Heat map of the approved reports")
+        $("span:contains('tinh')").text(" ESRI Satellite")
+        $("span:contains('nhân')").text(" Humanitarian Open Street Map (OSM)")
+      });
+    });
   });//Get JSON
   </script>
-  <script>
-  $( document ).ready(function() {
-    $(".vietnamese").click(function(){
-      $("span:contains('Cities')").text(" thành phố")
-      $("span:contains('Villages from OSM')").text(" làng")
-      $("span:contains('Districts')").text(" huyện biên giới")
-      $("span:contains('Heat')").text(" Bản đồ nhiệt của các báo cáo đã")
-      $("span:contains('ESRI')").text(" ESRI vệ tinh")
-      $("span:contains('Humanitarian')").text(" nhân đạo OSM")
-    });
-    $(".english").click(function(){
-      $("span:contains('thành')").text(" Cities from OSM")
-      $("span:contains('làng')").text(" Villages from OSM")
-      $("span:contains('huyện')").text(" District boundaries")
-      $("span:contains('Bản')").text(" Heat map of the approved reports")
-      $("span:contains('tinh')").text(" ESRI Satellite")
-      $("span:contains('nhân')").text(" Humanitarian Open Street Map (OSM)")
-    });
-  });
-  </script>
+
 </body>
 </html>
