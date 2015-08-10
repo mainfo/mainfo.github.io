@@ -219,6 +219,29 @@
     chainereports = '<div id ="min" class="reportLabelclass">'+minreport+'</div><div id ="quart" class="reportLabelclass">'+firstquart+'</div><div id ="quart2" class="reportLabelclass">'+secondquart+'</div><div id ="lastquart" class="reportLabelclass">'+lastquart+'</div><div id ="max" class="reportLabelclass">'+maxreport+'</div>';
 
     $('.leaflet-control-layers').append('<div class ="legend_gradient"></div>').append(chainereports);
+    $( ".leaflet-control-layers" ).prepend( $("<div style='margin-bottom:10px;margin-top:10px'><a class='english'style='color:#7FDBFF'>English</a> | <a class='russian'style='color:#FFDC00'>Russian</a> | <a class='ukrainian'style='color:#FF4136'>Ukrainian</a> </div>" ) );
+
+
+    $( document ).ready(function() {
+      $(".russian").click(function(){
+        $('.leaflet-control-layers span')[0].childNodes[0].data = " Открытая карта улиц (карта создана с помощью общественности)"
+        $('.leaflet-control-layers span')[1].childNodes[0].data = " Вид из спутника (ESRI)"
+        $('.leaflet-control-layers span')[2].childNodes[0].data = " Административно – территориальные  границы"
+        $('.leaflet-control-layers span')[3].childNodes[0].data = " Тепловая карта подтвержденных сообщений."
+      });
+      $(".ukrainian").click(function(){
+        $('.leaflet-control-layers span')[0].childNodes[0].data = " Відкрита карта вулиць (карта створена з допомогою громадськості)"
+        $('.leaflet-control-layers span')[1].childNodes[0].data = " Вигляд із супутника (ESRI)"
+        $('.leaflet-control-layers span')[2].childNodes[0].data = " Адміністративно-територіальні межі"
+        $('.leaflet-control-layers span')[3].childNodes[0].data = " Теплова карта підтверджених повідомлень."
+      });
+      $(".english").click(function(){
+        $('.leaflet-control-layers span')[0].childNodes[0].data = " Open Street Map (OSM)"
+        $('.leaflet-control-layers span')[1].childNodes[0].data = " ESRI Satellite"
+        $('.leaflet-control-layers span')[2].childNodes[0].data = " Administrative boundaries"
+        $('.leaflet-control-layers span')[3].childNodes[0].data = " Heat map of the approved reports"
+      });
+    });
 
 
   });
