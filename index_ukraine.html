@@ -54,7 +54,7 @@
   }
 
   var mapcfg = { 'controls': ($.urlParam('controls') != null ? Boolean(Number($.urlParam('controls'))) : true),
-                 'layer': ($.urlParam('layer') != null ? $.urlParam('layer') : "ESRI"),
+                 'layer': ($.urlParam('layer') != null ? $.urlParam('layer') : "OSM"),
                  'shortcr': ($.urlParam('shortcr') != null ? Boolean(Number($.urlParam('shortcr'))) : false) };
 
   // On the server will be data.json
@@ -177,8 +177,10 @@
 
     heatmapLayer.setData(hotData);
 
-    if (('controls' in mapcfg) && mapcfg.controls) {
+    if (mapcfg.controls) {
             L.control.layers(baseMaps, overlayMaps,{collapsed:false}).addTo(map);
+    } else {
+            $(".leaflet-left").hide();
     }
 
     var graphicScale = L.control.graphicScale({fill:'fill',position:'bottomleft'}).addTo(map);
