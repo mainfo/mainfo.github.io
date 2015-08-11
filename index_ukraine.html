@@ -159,15 +159,6 @@
       "ESRI Satellite": tiles
     };
 
-
-
-
-  //  console.log(centroidPt);
-
-    //tin2 = turf.tin(centroidPt);
-
-    var tin_ = L.geoJson(centroidPt,{"color": "#ff7800","weight": 1.5,"opacity": 0.65});
-
     var overlayMaps = {
       "Administrative boundaries":districts,
       "Heat map of the approved reports": heatmapLayer
@@ -181,8 +172,6 @@
 
     //var map = L.map('map',{maxZoom: 13,minZoom:10, maxBounds: bounds,layers: [tiles,features_cities_and_towns,features_villages,districts,heatmapLayer]}).setView([48.374497,38.699341], 10);
     var map = L.map('map',{maxZoom: 13,minZoom:1, layers: [mapcfg.layer == "ESRI" ? tiles : OpenStreetMap_HOT,districts,heatmapLayer]}).setView([48.374497,38.699341], 9);
-
-
 
 
 
