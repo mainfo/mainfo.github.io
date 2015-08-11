@@ -34,8 +34,6 @@
   <script src="src/underscore.js"></script>
   <script src="src/jquery.js"></script>
   <script src="src/leaflet.js"></script>
-  <script src="http://d3js.org/topojson.v1.min.js"></script>
-  <script src="http://api.tiles.mapbox.com/mapbox.js/plugins/turf/v2.0.0/turf.min.js"></script>
   <script src="src/HeatLayer.js"></script>
   <script src="src/heatmap2.js"></script>
   <script src="src/Label.js"></script>
@@ -49,7 +47,15 @@
 
   <script>
 
-  //First thing call the data that are update every hour
+  $.urlParam = function(name){
+    var results = new RegExp('[\?&]' + name + '=([^&#]*)').exec(window.location.href);
+    if (results == null) { return null; }
+    else { return results[1] || 0; }
+  }
+
+  var mapcfg = { 'controls': ($.urlParam('controls') != null ? Boolean(Number($.urlParam('controls'))) : true),
+                 'layer': ($.urlParam('layer') != null ? $.urlParam('layer') : "ESRI"),
+                 'shortcr': ($.urlParam('shortcr') != null ? Boolean(Number($.urlParam('shortcr'))) : false) };
 
   // On the server will be data.json
   $.getJSON("UAdata.json", function(data) {
@@ -143,7 +149,7 @@
     var labels = L.tileLayer('http://{s}.tiles.mapbox.com/v4/mainfo.f3xwp14i/{z}/{x}/{y}.png?access_token=pk.eyJ1IjoibWFpbmZvIiwiYSI6ImRjMGNmMGE5ZjczYzc2NDU0MmFlNWQ3NThiYzRkYmRhIn0.Z9ZkL0wyzGyOyGMkcyFU1w');
 
     var tiles = L.tileLayer('http://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
-      attribution: 'Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community'
+      attribution: 'Tiles &copy; Esri' + (mapcfg.shortcr ? '' : '&mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community')
     })
 
     var districts = L.tileLayer('http://{s}.tiles.mapbox.com/v4/mainfo.n386adh7/{z}/{x}/{y}.png?access_token=pk.eyJ1IjoibWFpbmZvIiwiYSI6ImRjMGNmMGE5ZjczYzc2NDU0MmFlNWQ3NThiYzRkYmRhIn0.Z9ZkL0wyzGyOyGMkcyFU1w');
@@ -153,11 +159,8 @@
       "ESRI Satellite": tiles
     };
 
-    var tin = turf.tin(data)
 
 
-    //tin_.addData(tin);
-    centroidPt = turf.centroid(tin);
 
   //  console.log(centroidPt);
 
@@ -165,37 +168,10 @@
 
     var tin_ = L.geoJson(centroidPt,{"color": "#ff7800","weight": 1.5,"opacity": 0.65});
 
-    L.TopoJSON = L.GeoJSON.extend({
-      addData: function(jsonData) {
-        if (jsonData.type === "Topology") {
-          for (key in jsonData.objects) {
-            geojson = topojson.feature(jsonData, jsonData.objects[key]);
-            L.GeoJSON.prototype.addData.call(this, geojson);
-          }
-        }
-        else {
-          L.GeoJSON.prototype.addData.call(this, jsonData);
-        }
-      }
-    });
-    var topoLayer = new L.TopoJSON();
-
-    $.getJSON('data/UA_a_adm1_unk_gua_0/ukr1.json')
-      .done(addTopoData);
-
-    function addTopoData(topoData){
-      topoLayer.addData(topoData);
-      topoLayer.addTo(map);
-    }
-
-    //console.log(tin2);
-
     var overlayMaps = {
       "Administrative boundaries":districts,
       "Heat map of the approved reports": heatmapLayer
       //"Heat map report count" : report_label_layer
-      //"Tin":tin_
-
     };
 
     //Restric to bounds34.760742,47.010226,42.637939,49.703168
@@ -204,7 +180,7 @@
     bounds = L.latLngBounds(southWest, northEast);
 
     //var map = L.map('map',{maxZoom: 13,minZoom:10, maxBounds: bounds,layers: [tiles,features_cities_and_towns,features_villages,districts,heatmapLayer]}).setView([48.374497,38.699341], 10);
-    var map = L.map('map',{maxZoom: 13,minZoom:1, layers: [OpenStreetMap_HOT,districts,heatmapLayer]}).setView([48.374497,38.699341], 9);
+    var map = L.map('map',{maxZoom: 13,minZoom:1, layers: [mapcfg.layer == "ESRI" ? tiles : OpenStreetMap_HOT,districts,heatmapLayer]}).setView([48.374497,38.699341], 9);
 
 
 
@@ -212,7 +188,9 @@
 
     heatmapLayer.setData(hotData);
 
-    L.control.layers(baseMaps, overlayMaps,{collapsed:false}).addTo(map);
+    if (('controls' in mapcfg) && mapcfg.controls) {
+            L.control.layers(baseMaps, overlayMaps,{collapsed:false}).addTo(map);
+    }
 
     var graphicScale = L.control.graphicScale({fill:'fill',position:'bottomleft'}).addTo(map);
 
